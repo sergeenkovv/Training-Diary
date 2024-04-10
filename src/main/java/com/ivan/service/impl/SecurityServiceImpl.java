@@ -15,32 +15,32 @@ public class SecurityServiceImpl implements SecurityService {
     private final AthleteDao athleteDao;
     @Override
     public Athlete registration(String username, String password) {
-        Optional<Athlete> player = athleteDao.findByUsername(username);
+        Optional<Athlete> athlete = athleteDao.findByUsername(username);
 
-        if (player.isPresent()) {
-            throw new RegistrationException("The player with this login already exists.");
+        if (athlete.isPresent()) {
+            throw new RegistrationException("The athlete with this login already exists.");
         }
 
-        Athlete newPlayer = Athlete.builder()
+        Athlete newAthlete = Athlete.builder()
                 .login(username)
                 .password(password)
                 .build();
 
-        return athleteDao.save(newPlayer);
+        return athleteDao.save(newAthlete);
     }
 
     @Override
     public Athlete authorization(String username, String password) {
-        Optional<Athlete> maybePlayer = athleteDao.findByUsername(username);
+        Optional<Athlete> maybeAthlete = athleteDao.findByUsername(username);
 
-        if (maybePlayer.isEmpty()) {
-            throw new AuthorizationException("There is no player with this login in the database.");
+        if (maybeAthlete.isEmpty()) {
+            throw new AuthorizationException("There is no athlete with this login in the database.");
         }
 
-        Athlete player = maybePlayer.get();
-        if (!player.getPassword().equals(password)) {
+        Athlete athlete = maybeAthlete.get();
+        if (!athlete.getPassword().equals(password)) {
             throw new AuthorizationException("Incorrect password.");
         }
-        return player;
+        return athlete;
     }
 }

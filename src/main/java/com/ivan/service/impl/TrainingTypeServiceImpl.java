@@ -14,12 +14,11 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     @Override
     public List<TrainingType> showAvailableTrainingTypes() {
-//        return trainingTypeDao.
-        return null;
+        return trainingTypeDao.findAll();
     }
 
     @Override
     public TrainingType save(TrainingType trainingType) {
-        return null;
+        return trainingTypeDao.save(trainingType);
     }
 }
