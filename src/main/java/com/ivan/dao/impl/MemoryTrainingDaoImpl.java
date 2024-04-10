@@ -7,10 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TrainingDaoImpl implements TrainingDao {
+public class MemoryTrainingDaoImpl implements TrainingDao {
 
     private final Map<Long, Training> trainingMap = new HashMap<>();
     private Long id = 1L;
+
+    @Override
+    public List<Training> findAllByOrderByDateAsc() {
+        return null;
+    }
 
     @Override
     public List<Training> findAll() {

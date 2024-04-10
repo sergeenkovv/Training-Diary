@@ -7,17 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TrainingTypeDaoImpl implements TrainingTypeDao {
+public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
 
     private final Map<Long, TrainingType> trainingTypeMap = new HashMap<>();
     private Long id = 1L;
 
-    public TrainingTypeDaoImpl() {
+    public MemoryTrainingTypeDaoImpl() {
         save(TrainingType.builder().typeName("CHEST").build());
         save(TrainingType.builder().typeName("BACK").build());
         save(TrainingType.builder().typeName("SHOULDERS").build());
         save(TrainingType.builder().typeName("LEGS").build());
-        save(TrainingType.builder().typeName("CARDIO").build());
     }
 
     @Override

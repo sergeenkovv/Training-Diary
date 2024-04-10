@@ -5,7 +5,7 @@ import com.ivan.model.Athlete;
 
 import java.util.*;
 
-public class AthleteDaoImpl implements AthleteDao {
+public class MemoryAthleteDaoImpl implements AthleteDao {
 
     private final Map<Long, Athlete> athleteMap = new HashMap<>();
     private Long id = 1L;
