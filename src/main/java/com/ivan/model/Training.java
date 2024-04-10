@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 
 @Data
 @NoArgsConstructor
@@ -14,8 +15,7 @@ import java.time.LocalDateTime;
 public class Training {
 
     private Long id;
-    private TrainingType trainingType;
+    private String trainingType;
     private Integer setsAmount;
-    private LocalDateTime time;
-    private Integer caloriesAmount;
+    private YearMonth date;
 }
