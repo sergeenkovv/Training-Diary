@@ -2,6 +2,7 @@ package com.ivan.dao.impl;
 
 import com.ivan.dao.AthleteDao;
 import com.ivan.model.Athlete;
+import com.ivan.model.Role;
 
 import java.util.*;
 
@@ -10,13 +11,24 @@ public class MemoryAthleteDaoImpl implements AthleteDao {
     private final Map<Long, Athlete> athleteMap = new HashMap<>();
     private Long id = 1L;
 
+    public MemoryAthleteDaoImpl() {
+        save(
+                Athlete.builder()
+                        .id(-1L)
+                        .login("trainer")
+                        .password("trainer")
+                        .role(Role.TRAINER)
+                        .build()
+        );
+    }
+
     @Override
-    public Optional<Athlete> findByUsername(String username) {
+    public Optional<Athlete> findByLogin(String login) {
         Athlete athlete = null;
         List<Athlete> list = new ArrayList<>(athleteMap.values());
 
         for (Athlete atl : list) {
-            if (atl.getLogin().equals(username)) {
+            if (atl.getLogin().equals(login)) {
                 athlete = atl;
                 break;
             }

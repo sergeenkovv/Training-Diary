@@ -3,9 +3,7 @@ package com.ivan.dao.impl;
 import com.ivan.dao.TrainingTypeDao;
 import com.ivan.model.TrainingType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
 
@@ -29,5 +27,19 @@ public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
         trainingType.setId(id++);
         trainingTypeMap.put(trainingType.getId(), trainingType);
         return trainingTypeMap.get(trainingType.getId());
+    }
+
+    @Override
+    public Optional<TrainingType> findByTypeName(String typeName) {
+        TrainingType trainingType = null;
+        List<TrainingType> list = new ArrayList<>(trainingTypeMap.values());
+
+        for (TrainingType type : list) {
+            if (type.getTypeName().equals(typeName)) {
+                trainingType = type;
+                break;
+            }
+        }
+        return trainingType == null ? Optional.empty() : Optional.of(trainingType);
     }
 }
