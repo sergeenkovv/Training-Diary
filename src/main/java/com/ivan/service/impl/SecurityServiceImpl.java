@@ -3,7 +3,9 @@ package com.ivan.service.impl;
 import com.ivan.dao.AthleteDao;
 import com.ivan.exception.AuthorizationException;
 import com.ivan.exception.RegistrationException;
+import com.ivan.model.ActionType;
 import com.ivan.model.Athlete;
+import com.ivan.service.AuditService;
 import com.ivan.service.SecurityService;
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
+    private final AuditService auditService;
 
     @Override
     public Athlete registration(String login, String password) {
@@ -26,6 +29,9 @@ public class SecurityServiceImpl implements SecurityService {
                 .login(login)
                 .password(password)
                 .build();
+
+        auditService.audit(
+                ActionType.REGISTRATION, login);
 
         return athleteDao.save(newAthlete);
     }
@@ -42,6 +48,10 @@ public class SecurityServiceImpl implements SecurityService {
         if (!athlete.getPassword().equals(password)) {
             throw new AuthorizationException("Incorrect password.");
         }
+
+        auditService.audit(
+                ActionType.AUTHORIZATION, login);
+
         return athlete;
     }
 }

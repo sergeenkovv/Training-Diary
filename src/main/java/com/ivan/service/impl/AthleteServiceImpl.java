@@ -6,6 +6,7 @@ import com.ivan.service.AthleteService;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class AthleteServiceImpl implements AthleteService {
@@ -15,5 +16,10 @@ public class AthleteServiceImpl implements AthleteService {
     @Override
     public List<Athlete> showAllAthlete() {
         return athleteDao.findAll();
+    }
+
+    @Override
+    public Optional<Athlete> getAthleteById(Long id) {
+        return athleteDao.findById(id);
     }
 }

@@ -10,5 +10,7 @@ public interface TrainingTypeService {
 
     void save (TrainingType trainingType);
 
+    void delete(String trainingTypeName);
+
     TrainingType getByTypeName(String typeName);
 }

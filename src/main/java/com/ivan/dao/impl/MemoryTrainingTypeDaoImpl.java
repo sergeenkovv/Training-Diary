@@ -23,13 +23,6 @@ public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
     }
 
     @Override
-    public TrainingType save(TrainingType trainingType) {
-        trainingType.setId(id++);
-        trainingTypeMap.put(trainingType.getId(), trainingType);
-        return trainingTypeMap.get(trainingType.getId());
-    }
-
-    @Override
     public Optional<TrainingType> findByTypeName(String typeName) {
         TrainingType trainingType = null;
         List<TrainingType> list = new ArrayList<>(trainingTypeMap.values());
@@ -41,5 +34,26 @@ public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
             }
         }
         return trainingType == null ? Optional.empty() : Optional.of(trainingType);
+    }
+
+    @Override
+    public void delete(TrainingType trainingToDelete) {
+        trainingTypeMap.remove(trainingToDelete.getId());
+    }
+
+    @Override
+    public TrainingType save(TrainingType trainingType) {
+        trainingType.setId(getLastId());
+        incrementId();
+        trainingTypeMap.put(trainingType.getId(), trainingType);
+        return trainingTypeMap.get(trainingType.getId());
+    }
+
+    private Long getLastId() {
+        return id;
+    }
+
+    private void incrementId() {
+        id++;
     }
 }

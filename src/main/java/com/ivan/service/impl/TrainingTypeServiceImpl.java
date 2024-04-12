@@ -7,6 +7,7 @@ import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class TrainingTypeServiceImpl implements TrainingTypeService {
@@ -23,9 +24,20 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
         trainingTypeDao.save(trainingType);
     }
 
+    public void delete(String trainingTypeName) {
+        Optional<TrainingType> optionalTrainingType = trainingTypeDao.findByTypeName(trainingTypeName);
+
+        if (optionalTrainingType.isEmpty()) {
+            throw new InvalidTrainingTypeException("Such type of training does not exist!");
+        }
+
+        TrainingType trainingToDelete = optionalTrainingType.get();
+        trainingTypeDao.delete(trainingToDelete);
+    }
+
     @Override
     public TrainingType getByTypeName(String typeName) {
         return trainingTypeDao.findByTypeName(typeName)
-                .orElseThrow(() -> new InvalidTrainingTypeException("Such training does not exist!"));
+                .orElseThrow(() -> new InvalidTrainingTypeException("Such type of training does not exist!"));
     }
 }

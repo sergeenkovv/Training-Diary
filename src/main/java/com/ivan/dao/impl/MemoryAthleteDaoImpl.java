@@ -37,6 +37,11 @@ public class MemoryAthleteDaoImpl implements AthleteDao {
     }
 
     @Override
+    public Optional<Athlete> findById(Long id) {
+        Athlete athlete = athleteMap.get(id);
+        return athlete == null ? Optional.empty() : Optional.of(athlete);
+    }
+
     public List<Athlete> findAll() {
         return List.copyOf(athleteMap.values());
     }

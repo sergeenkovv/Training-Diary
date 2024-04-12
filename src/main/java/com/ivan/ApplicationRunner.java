@@ -5,10 +5,7 @@ import com.ivan.controller.SecurityController;
 import com.ivan.exception.*;
 import com.ivan.in.InputData;
 import com.ivan.in.OutputData;
-import com.ivan.model.Athlete;
-import com.ivan.model.Role;
-import com.ivan.model.Training;
-import com.ivan.model.TrainingType;
+import com.ivan.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -98,7 +95,7 @@ public class ApplicationRunner {
                   1. View types of training.
                   2. Add a new training.
                   3. Edit training
-                  4. Get previous workouts.
+                  4. Get previous workouts sorted by date.
                   5. Show statistics — Get trainings by sets amount.
                   6. Delete training.
                   7. Log out of your account.
@@ -115,7 +112,7 @@ public class ApplicationRunner {
             } else if (input.equals("3")) {
                 HandlerClient.handlerEditTraining(inputData, outputData);
             } else if (input.equals("4")) {
-                HandlerClient.handlerGetPreviousTrainings(outputData);
+                HandlerClient.handlerGetPreviousTrainingsSortedByDate(outputData);
             } else if (input.equals("5")) {
                 HandlerClient.HandlerGetTrainingsBySetsAmount(outputData);
             } else if (input.equals("6")) {
@@ -137,8 +134,13 @@ public class ApplicationRunner {
         final String menu = """
                  ╔═════════════════════════════════════════════════╗
                  1. Get a list of registered clients.
-                 2. Get specific user's workout.
-                 3. Log out of your account.
+                 2. View types of training.
+                 3. Add a new training type.
+                 4. Delete training type.
+                 5. Get the athlete's trainings sorted by date.
+                 6. Get the athlete's trainings sorted by sets amount.
+                 7. Get athlete audit.
+                 8. Log out of your account.
                  0. Quit the application.
                  ╚═════════════════════════════════════════════════╝
                 """;
@@ -148,8 +150,18 @@ public class ApplicationRunner {
             if (input.equals("1")) {
                 HandlerTrainer.HandlerShowAllClients(outputData);
             } else if (input.equals("2")) {
-                HandlerTrainer.HandlerAddNewTypeOfTraining(inputData, outputData);
+                HandlerTrainer.showAvailableTrainingsTypes(outputData);
             } else if (input.equals("3")) {
+                HandlerTrainer.HandlerAddNewTypeOfTraining(inputData, outputData);
+            } else if (input.equals("4")) {
+                HandlerTrainer.HandlerDoDeleteTrainingType(inputData, outputData);
+            } else if (input.equals("5")) {
+                HandlerTrainer.HandlerGetClientsPreviousTrainingsSortedByDate(inputData, outputData);
+            } else if (input.equals("6")) {
+                HandlerTrainer.HandlerGetClientsPreviousTrainingsSortedBySetsAmount(inputData, outputData);
+            } else if (input.equals("7")) {
+                HandlerTrainer.HandlerGetAthleteAudits(inputData, outputData);
+            } else if (input.equals("8")) {
                 ApplicationContext.cleanAuthorizeAthlete();
                 currentStage = ProcessStage.SECURITY;
                 break;
@@ -233,19 +245,19 @@ public class ApplicationRunner {
             final String msgCl = "List of all clients:";
             outputData.output(msgCl);
 
-            List<Athlete> athletesList = athleteController.showAllUser();
-            List<Athlete> adminList = new ArrayList<>();
+            List<Athlete> clientsList = athleteController.showAllClients();
+            List<Athlete> trainersList = new ArrayList<>();
 
-            for (Athlete user : athletesList) {
-                if (isTrainer(user)) adminList.add(user);
+            for (Athlete ath : clientsList) {
+                if (isTrainer(ath)) trainersList.add(ath);
                 else {
-                    outputData.output(user);
+                    outputData.output(ath);
                 }
             }
 
             final String msgTr = "List of all trainers:";
             outputData.output(msgTr);
-            for (Athlete trainer : adminList) {
+            for (Athlete trainer : trainersList) {
                 outputData.output(trainer);
             }
         }
@@ -260,10 +272,61 @@ public class ApplicationRunner {
                             .typeName(trainingType)
                             .build());
         }
+
+        public static void showAvailableTrainingsTypes(OutputData outputData) {
+            HandlerClient.showAvailableTrainingsTypes(outputData);
+        }
+
+        public static void HandlerDoDeleteTrainingType(InputData inputData, OutputData outputData) {
+            final String trainingTypeMsg = "Enter the type of training you want to delete:";
+            outputData.output(trainingTypeMsg);
+            String trainingType = inputData.input().toString();
+
+            athleteController.deleteTrainingType(trainingType);
+        }
+
+        public static void HandlerGetClientsPreviousTrainingsSortedByDate(InputData inputData, OutputData outputData) {
+            final String athleteMsg = "Enter the athlete id whose workouts you want to see";
+            outputData.output(athleteMsg);
+            String athlete = inputData.input().toString();
+
+            List<Training> trainingList = athleteController.showHistoryTrainingsSortedByDate(Long.parseLong(athlete));
+            if (trainingList == null || trainingList.isEmpty()) {
+                outputData.output("You have not a training history.\n");
+            } else {
+                outputData.output(trainingList);
+            }
+        }
+
+        public static void HandlerGetClientsPreviousTrainingsSortedBySetsAmount(InputData inputData, OutputData outputData) {
+            final String athleteMsg = "Enter the athlete id whose workouts you want to see";
+            outputData.output(athleteMsg);
+            String athlete = inputData.input().toString();
+
+            List<Training> trainingList = athleteController.showHistoryTrainingsBySetsAmount(Long.parseLong(athlete));
+            if (trainingList == null || trainingList.isEmpty()) {
+                outputData.output("You have not a training history.\n");
+            } else {
+                outputData.output(trainingList);
+            }
+        }
+
+        public static void HandlerGetAthleteAudits(InputData inputData, OutputData outputData) {
+            final String athleteMsg = "Enter the athlete name whose audits you want to see";
+            outputData.output(athleteMsg);
+            String athlete = inputData.input().toString();
+
+            List<Audit> auditList = athleteController.showAuditsByAthleteId(athlete);
+
+            if (auditList == null || auditList.isEmpty()) {
+                outputData.output("You have not a training history.\n");
+            } else {
+                outputData.output(auditList);
+            }
+        }
     }
 
     private static class HandlerClient {
-
 
         public static void showAvailableTrainingsTypes(OutputData outputData) {
             List<TrainingType> allTypes = athleteController.showAvailableTrainingTypes();
@@ -305,7 +368,7 @@ public class ApplicationRunner {
             athleteController.editTrainingByAthleteIdAndTrainingDate(ApplicationContext.getAuthorizeAthlete().getId(), LocalDate.parse(date), typeTraining, setsAmount);
         }
 
-        public static void handlerGetPreviousTrainings(OutputData outputData) {
+        public static void handlerGetPreviousTrainingsSortedByDate(OutputData outputData) {
             List<Training> trainingList = athleteController.showHistoryTrainingsSortedByDate(ApplicationContext.getAuthorizeAthlete().getId());
             if (trainingList == null || trainingList.isEmpty()) {
                 outputData.output("You have not a training history.\n");

@@ -13,7 +13,7 @@ public interface TrainingService {
 
     List<Training> getTrainingsSortedByDate(Long athleteId);
 
-    List<Training> getTrainingsBySetsAmount(Long athleteId);
+    List<Training> getTrainingsSortedBySetsAmount(Long athleteId);
 
     void deleteTraining(Long athleteId, LocalDate date);
 }

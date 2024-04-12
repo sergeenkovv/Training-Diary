@@ -1,0 +1,12 @@
+package com.ivan.model;
+
+public enum ActionType {
+
+    REGISTRATION,
+    AUTHORIZATION,
+    ADD_TRAINING,
+    UPDATE_TRAINING,
+    GET_TRAININGS_SORTED_BY_DATE,
+    GET_TRAININGS_SORTED_BY_SETS_AMOUNT,
+    DELETE_TRAINING
+}
