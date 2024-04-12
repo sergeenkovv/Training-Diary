@@ -2,7 +2,6 @@ package com.ivan.service.impl;
 
 import com.ivan.dao.TrainingTypeDao;
 import com.ivan.exception.InvalidTrainingTypeException;
-import com.ivan.exception.TrainingLimitExceededException;
 import com.ivan.model.TrainingType;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +14,13 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeDao trainingTypeDao;
 
     @Override
-    public List<TrainingType> showAvailableTrainingTypes() {
+    public List<TrainingType> getAvailableTrainingTypes() {
         return trainingTypeDao.findAll();
     }
 
     @Override
-    public TrainingType save(TrainingType trainingType) {
-        return trainingTypeDao.save(trainingType);
+    public void save(TrainingType trainingType) {
+        trainingTypeDao.save(trainingType);
     }
 
     @Override

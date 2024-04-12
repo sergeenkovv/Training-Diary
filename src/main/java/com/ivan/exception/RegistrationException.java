@@ -1,6 +1,7 @@
 package com.ivan.exception;
 
 public class RegistrationException extends RuntimeException {
+
     public RegistrationException(String message) {
         super(message);
     }

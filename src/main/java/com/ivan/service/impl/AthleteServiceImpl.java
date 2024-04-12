@@ -11,6 +11,7 @@ import java.util.List;
 public class AthleteServiceImpl implements AthleteService {
 
     private final AthleteDao athleteDao;
+
     @Override
     public List<Athlete> showAllAthlete() {
         return athleteDao.findAll();

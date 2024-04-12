@@ -13,6 +13,7 @@ import java.util.Optional;
 public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
+
     @Override
     public Athlete registration(String login, String password) {
         Optional<Athlete> athlete = athleteDao.findByLogin(login);

@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface TrainingTypeService {
 
-    List<TrainingType> showAvailableTrainingTypes();
+    List<TrainingType> getAvailableTrainingTypes();
 
-    TrainingType save (TrainingType trainingType);
+    void save (TrainingType trainingType);
 
     TrainingType getByTypeName(String typeName);
 }

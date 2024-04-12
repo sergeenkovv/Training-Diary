@@ -4,7 +4,6 @@ import com.ivan.dao.TrainingDao;
 import com.ivan.exception.TrainingLimitExceededException;
 import com.ivan.exception.TrainingNotFoundException;
 import com.ivan.model.Training;
-import com.ivan.model.TrainingType;
 import com.ivan.service.TrainingService;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,8 @@ public class TrainingServiceImpl implements TrainingService {
         trainingDao.save(training);
     }
 
-    public Training updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
+    @Override
+    public void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
         Optional<Training> trainingOptional = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
 
         if (trainingOptional.isEmpty()) {
@@ -46,19 +46,6 @@ public class TrainingServiceImpl implements TrainingService {
         Training existingTraining = trainingOptional.get();
         existingTraining.setTrainingType(trainingTypeService.getByTypeName(trainingType));
         existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
-
-        return existingTraining;
-    }
-
-    public void deleteTraining(Long athleteId, LocalDate date) {
-        Optional<Training> trainingOptional = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
-
-        if (trainingOptional.isEmpty()) {
-            throw new TrainingNotFoundException("Training not found!");
-        }
-
-        Training trainingToDelete = trainingOptional.get();
-        trainingDao.delete(trainingToDelete);
     }
 
     @Override
@@ -68,10 +55,23 @@ public class TrainingServiceImpl implements TrainingService {
         return allByAthleteId;
     }
 
+    @Override
     public List<Training> getTrainingsBySetsAmount(Long athleteId) {
         List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
         allByAthleteId.sort(Comparator.comparingInt(Training::getSetsAmount).reversed());
         return allByAthleteId;
+    }
+
+    @Override
+    public void deleteTraining(Long athleteId, LocalDate date) {
+        Optional<Training> trainingOptional = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
+
+        if (trainingOptional.isEmpty()) {
+            throw new TrainingNotFoundException("Training not found!");
+        }
+
+        Training trainingToDelete = trainingOptional.get();
+        trainingDao.delete(trainingToDelete);
     }
 
     private boolean isValidTraining(Long athleteId, LocalDate date) {

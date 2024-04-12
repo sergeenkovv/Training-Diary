@@ -1,6 +1,5 @@
 package com.ivan.model;
 
-import com.ivan.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

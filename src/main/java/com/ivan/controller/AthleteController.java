@@ -22,6 +22,10 @@ public class AthleteController {
     private final TrainingService trainingService;
     private final TrainingTypeService trainingTypeService;
 
+    public List<TrainingType> showAvailableTrainingTypes() {
+        return trainingTypeService.getAvailableTrainingTypes();
+    }
+
     public void addTraining(Long athleteId, String trainingType, String setsAmount, LocalDate date) {
         if (!isValidNum(setsAmount)) {
             throw new NotValidArgumentException("Enter a number greater than 0. letters cannot be used!");
@@ -30,8 +34,12 @@ public class AthleteController {
         trainingService.addTraining(athleteId, trainingType, Integer.parseInt(setsAmount), date);
     }
 
-    public List<TrainingType> showAvailableTrainingTypes() {
-        return trainingTypeService.showAvailableTrainingTypes();
+    public void editTrainingByAthleteIdAndTrainingDate(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
+        if (!isValidNum(setsAmount)) {
+            throw new NotValidArgumentException("Enter a number greater than 0. letters cannot be used!");
+        }
+
+        trainingService.updateTraining(athleteId, date, trainingType, setsAmount);
     }
 
     public List<Training> showHistoryTrainingsSortedByDate(Long athleteId) {
@@ -40,10 +48,6 @@ public class AthleteController {
 
     public List<Training> showHistoryTrainingsBySetsAmount(Long athleteId) {
         return trainingService.getTrainingsBySetsAmount(athleteId);
-    }
-
-    public void editTrainingByAthleteIdAndTrainingDate(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
-        trainingService.updateTraining(athleteId, date, trainingType, setsAmount);
     }
 
     public void deleteTraining(Long athleteId, LocalDate date) {
