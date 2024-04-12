@@ -11,9 +11,11 @@ import com.ivan.dao.impl.MemoryTrainingTypeDaoImpl;
 import com.ivan.in.ConsoleInputData;
 import com.ivan.in.ConsoleOutputData;
 import com.ivan.model.Athlete;
+import com.ivan.service.AthleteService;
 import com.ivan.service.SecurityService;
 import com.ivan.service.TrainingService;
 import com.ivan.service.TrainingTypeService;
+import com.ivan.service.impl.AthleteServiceImpl;
 import com.ivan.service.impl.SecurityServiceImpl;
 import com.ivan.service.impl.TrainingServiceImpl;
 import com.ivan.service.impl.TrainingTypeServiceImpl;
@@ -54,24 +56,31 @@ public class ApplicationContext {
     }
 
     private static void loadServiceLayer() {
+        AthleteService athleteService = new AthleteServiceImpl(
+                (AthleteDao) CONTEXT.get("athleteDao")
+        );
+        CONTEXT.put("athleteService", athleteService);
+
         SecurityService securityService = new SecurityServiceImpl(
                 (AthleteDao) CONTEXT.get("athleteDao")
         );
         CONTEXT.put("securityService", securityService);
 
-        TrainingService trainingService = new TrainingServiceImpl(
-                (TrainingDao) CONTEXT.get("trainingDao")
-        );
-        CONTEXT.put("trainingService", trainingService);
-
         TrainingTypeService trainingTypeService = new TrainingTypeServiceImpl(
                 (TrainingTypeDao) CONTEXT.get("trainingTypeDao")
         );
-        CONTEXT.put("trainingTypeService", trainingTypeService);
+        CONTEXT.put("trainingTypeService", trainingTypeService); // Добавляем в контекст перед использованием
+
+        TrainingService trainingService = new TrainingServiceImpl(
+                (TrainingDao) CONTEXT.get("trainingDao"),
+                (TrainingTypeService) CONTEXT.get("trainingTypeService")
+        );
+        CONTEXT.put("trainingService", trainingService);
     }
 
     private static void loadControllers() {
         AthleteController athleteController = new AthleteController(
+                (AthleteService) CONTEXT.get("athleteService"),
                 (TrainingService) CONTEXT.get("trainingService"),
                 (TrainingTypeService) CONTEXT.get("trainingTypeService")
         );
