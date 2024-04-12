@@ -30,7 +30,7 @@ public class SecurityController {
             throw new NotValidArgumentException("The password or login cannot be empty or consist of only spaces.");
         }
 
-        log.info("The player athlete to log in with login " + login + " and password " + password + ".");
+        log.info("The athlete to log in with login " + login + " and password " + password + ".");
         return securityService.authorization(login, password);
     }
 }
