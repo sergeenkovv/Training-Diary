@@ -14,15 +14,15 @@ public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
     @Override
-    public Athlete registration(String username, String password) {
-        Optional<Athlete> athlete = athleteDao.findByUsername(username);
+    public Athlete registration(String login, String password) {
+        Optional<Athlete> athlete = athleteDao.findByLogin(login);
 
         if (athlete.isPresent()) {
-            throw new RegistrationException("The athlete with this login already exists.");
+            throw new RegistrationException("The athlete with this login already exists!");
         }
 
         Athlete newAthlete = Athlete.builder()
-                .login(username)
+                .login(login)
                 .password(password)
                 .build();
 
@@ -30,11 +30,11 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public Athlete authorization(String username, String password) {
-        Optional<Athlete> maybeAthlete = athleteDao.findByUsername(username);
+    public Athlete authorization(String login, String password) {
+        Optional<Athlete> maybeAthlete = athleteDao.findByLogin(login);
 
         if (maybeAthlete.isEmpty()) {
-            throw new AuthorizationException("There is no athlete with this login in the database.");
+            throw new AuthorizationException("There is no athlete with this login in the database!");
         }
 
         Athlete athlete = maybeAthlete.get();
