@@ -5,8 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.YearMonth;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +14,8 @@ import java.time.YearMonth;
 public class Training {
 
     private Long id;
-    private String trainingType;
+    private TrainingType trainingType;
     private Integer setsAmount;
-    private YearMonth date;
+    private LocalDate date;
+    private Long athleteId;
 }
