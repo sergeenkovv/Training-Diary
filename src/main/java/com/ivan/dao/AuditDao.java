@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface AuditDao extends GeneralDao<Long, Audit> {
 
-    List<Audit> findAllByAthleteId(String athleteId);
+    List<Audit> findAllByAthleteLogin(String login);
 }

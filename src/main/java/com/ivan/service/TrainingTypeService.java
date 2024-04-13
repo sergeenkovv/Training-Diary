@@ -13,4 +13,5 @@ public interface TrainingTypeService {
     void delete(String trainingTypeName);
 
     TrainingType getByTypeName(String typeName);
+
 }

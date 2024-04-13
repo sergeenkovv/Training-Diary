@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AuditService {
 
-    List<Audit> getAllAuditsByAthleteId(String athleteId);
+    List<Audit> getAllAuditsByAthleteLogin(String login);
 
     void audit(ActionType actionType, String login);
 
