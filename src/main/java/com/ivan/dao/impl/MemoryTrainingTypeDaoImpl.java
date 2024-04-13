@@ -24,15 +24,13 @@ public class MemoryTrainingTypeDaoImpl implements TrainingTypeDao {
 
     @Override
     public Optional<TrainingType> findByTypeName(String typeName) {
-        TrainingType trainingType = null;
+        TrainingType trainingType;
         List<TrainingType> list = new ArrayList<>(trainingTypeMap.values());
 
-        for (TrainingType type : list) {
-            if (type.getTypeName().equals(typeName)) {
-                trainingType = type;
-                break;
-            }
-        }
+        trainingType = list.stream()
+                .filter(type -> type.getTypeName().equals(typeName))
+                .findFirst()
+                .orElse(null);
         return trainingType == null ? Optional.empty() : Optional.of(trainingType);
     }
 

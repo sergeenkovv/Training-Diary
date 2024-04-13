@@ -3,10 +3,10 @@ package com.ivan.dao.impl;
 import com.ivan.dao.AuditDao;
 import com.ivan.model.Audit;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MemoryAuditDaoImpl implements AuditDao {
 
@@ -14,14 +14,10 @@ public class MemoryAuditDaoImpl implements AuditDao {
     private Long id = 1L;
 
     @Override
-    public List<Audit> findAllByAthleteId(String athleteId) {
-        List<Audit> result = new ArrayList<>();
-        for (Audit audit : auditMap.values()) {
-            if (audit.getLogin().equals(athleteId)) {
-                result.add(audit);
-            }
-        }
-        return result;
+    public List<Audit> findAllByAthleteLogin(String login) {
+        return auditMap.values().stream()
+                .filter(audit -> audit.getLogin().equals(login))
+                .collect(Collectors.toList());
     }
 
     @Override

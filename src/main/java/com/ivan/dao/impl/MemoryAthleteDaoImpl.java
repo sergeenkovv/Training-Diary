@@ -24,15 +24,13 @@ public class MemoryAthleteDaoImpl implements AthleteDao {
 
     @Override
     public Optional<Athlete> findByLogin(String login) {
-        Athlete athlete = null;
+        Athlete athlete;
         List<Athlete> list = new ArrayList<>(athleteMap.values());
 
-        for (Athlete atl : list) {
-            if (atl.getLogin().equals(login)) {
-                athlete = atl;
-                break;
-            }
-        }
+        athlete = list.stream()
+                .filter(atl -> atl.getLogin().equals(login))
+                .findFirst()
+                .orElse(null);
         return athlete == null ? Optional.empty() : Optional.of(athlete);
     }
 

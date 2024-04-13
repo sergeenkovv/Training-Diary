@@ -5,6 +5,7 @@ import com.ivan.model.Training;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MemoryTrainingDaoImpl implements TrainingDao {
 
@@ -13,26 +14,19 @@ public class MemoryTrainingDaoImpl implements TrainingDao {
 
     @Override
     public List<Training> findAllByAthleteId(Long athleteId) {
-        List<Training> result = new ArrayList<>();
-        for (Training training : trainingMap.values()) {
-            if (training.getAthleteId().equals(athleteId)) {
-                result.add(training);
-            }
-        }
-        return result;
+        return trainingMap.values().stream()
+                .filter(training -> training.getAthleteId().equals(athleteId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<Training> findByAthleteIdAndTrainingDate(Long athleteId, LocalDate date) {
-        Training training = null;
+        Training training;
         List<Training> list = new ArrayList<>(trainingMap.values());
 
-        for (Training tr : list) {
-            if (tr.getAthleteId().equals(athleteId) && tr.getDate().equals(date)) {
-                training = tr;
-                break;
-            }
-        }
+        training = list.stream()
+                .filter(tr -> tr.getAthleteId().equals(athleteId) && tr.getDate().equals(date))
+                .findFirst().orElse(null);
         if (training == null) return Optional.empty();
         return Optional.of(training);
     }
