@@ -8,7 +8,7 @@ import com.ivan.in.OutputData;
 import com.ivan.model.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,11 +43,13 @@ public class ApplicationRunner {
                         processIsRun = false;
                     }
                 }
-            } catch (AuthorizationException |
+            } catch (AthleteNotFoundException |
+                     AuthorizationException |
                      InvalidTrainingTypeException |
-                     NotValidArgumentException |
+                     InvalidArgumentException |
                      RegistrationException |
                      TrainingLimitExceededException |
+                     DateTimeParseException |
                      TrainingNotFoundException e) {
                 log.warn(e.getMessage());
                 outputData.errOutput(e.getMessage());
@@ -316,7 +318,7 @@ public class ApplicationRunner {
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
 
-            List<Audit> auditList = athleteController.showAuditsByAthleteId(athlete);
+            List<Audit> auditList = athleteController.showAuditsByAthleteLogin(athlete);
 
             if (auditList == null || auditList.isEmpty()) {
                 outputData.output("You have not a training history.\n");
@@ -345,15 +347,11 @@ public class ApplicationRunner {
             outputData.output(setsAmountMsg);
             String setsAmount = inputData.input().toString();
 
-            final String dateMsg = "enter the date. for example 2011-12-03";
-            outputData.output(dateMsg);
-            String date = inputData.input().toString();
-
-            athleteController.addTraining(ApplicationContext.getAuthorizeAthlete().getId(), trainingType, setsAmount, LocalDate.parse(date));
+            athleteController.addTraining(ApplicationContext.getAuthorizeAthlete().getId(), trainingType, setsAmount);
         }
 
         public static void handlerEditTraining(InputData inputData, OutputData outputData) {
-            final String dateMsg = "Enter the training date you want to change:";
+            final String dateMsg = "Enter the date of study you want to change in the format yyyy-MM-dd";
             outputData.output(dateMsg);
             String date = inputData.input().toString();
 
@@ -365,7 +363,7 @@ public class ApplicationRunner {
             outputData.output(setsAmountMsg);
             String setsAmount = inputData.input().toString();
 
-            athleteController.editTrainingByAthleteIdAndTrainingDate(ApplicationContext.getAuthorizeAthlete().getId(), LocalDate.parse(date), typeTraining, setsAmount);
+            athleteController.editTrainingByAthleteIdAndTrainingDate(ApplicationContext.getAuthorizeAthlete().getId(), date, typeTraining, setsAmount);
         }
 
         public static void handlerGetPreviousTrainingsSortedByDate(OutputData outputData) {
@@ -387,11 +385,11 @@ public class ApplicationRunner {
         }
 
         public static void HandlerDoDeleteTraining(InputData inputData, OutputData outputData) {
-            final String dateMsg = "Enter the training date you want to delete:";
+            final String dateMsg = "Enter the training date you want to delete in the format yyyy-MM-dd:";
             outputData.output(dateMsg);
             String date = inputData.input().toString();
 
-            athleteController.deleteTraining(ApplicationContext.getAuthorizeAthlete().getId(), LocalDate.parse(date));
+            athleteController.deleteTraining(ApplicationContext.getAuthorizeAthlete().getId(), date);
         }
     }
 }

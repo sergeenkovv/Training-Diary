@@ -6,6 +6,8 @@ import com.ivan.model.Audit;
 import com.ivan.service.AuditService;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,8 +16,8 @@ public class AuditServiceImpl implements AuditService {
     private final AuditDao auditDao;
 
     @Override
-    public List<Audit> getAllAuditsByAthleteId(String athleteId) {
-        return auditDao.findAllByAthleteId(athleteId);
+    public List<Audit> getAllAuditsByAthleteLogin(String login) {
+        return auditDao.findAllByAthleteLogin(login);
     }
 
     @Override
@@ -23,6 +25,7 @@ public class AuditServiceImpl implements AuditService {
         Audit audit = Audit.builder()
                 .actionType(actionType)
                 .login(login)
+                .date(LocalDate.now())
                 .build();
         save(audit);
     }
