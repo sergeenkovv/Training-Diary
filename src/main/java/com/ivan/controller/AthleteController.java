@@ -1,6 +1,6 @@
 package com.ivan.controller;
 
-import com.ivan.exception.NotValidArgumentException;
+import com.ivan.exception.InvalidArgumentException;
 import com.ivan.model.Athlete;
 import com.ivan.model.Audit;
 import com.ivan.model.Training;
@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,28 +31,24 @@ public class AthleteController {
         return trainingTypeService.getAvailableTrainingTypes();
     }
 
-    public void addTraining(Long athleteId, String trainingType, String setsAmount, LocalDate date) {
+    public void addTraining(Long athleteId, String trainingType, String setsAmount) {
         if (!isValidNum(setsAmount)) {
-            throw new NotValidArgumentException("Enter a number greater than 0. letters cannot be used!");
+            throw new InvalidArgumentException("Enter a number greater than 0. letters cannot be used!");
         }
 
-        if (!isValidDate(date)) {
-            throw new NotValidArgumentException("Incorrect date format. it should match yyyy-MM-dd!");
-        }
-
-        trainingService.addTraining(athleteId, trainingType, Integer.parseInt(setsAmount), date);
+        trainingService.addTraining(athleteId, trainingType, Integer.parseInt(setsAmount));
     }
 
-    public void editTrainingByAthleteIdAndTrainingDate(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
+    public void editTrainingByAthleteIdAndTrainingDate(Long athleteId, String date, String trainingType, String setsAmount) {
         if (!isValidNum(setsAmount)) {
-            throw new NotValidArgumentException("Enter a number greater than 0. letters cannot be used!");
+            throw new InvalidArgumentException("Enter a number greater than 0. letters cannot be used!");
         }
 
-        if (!isValidDate(date)) {
-            throw new NotValidArgumentException("Incorrect date format. it should match yyyy-MM-dd!");
+        if (!isValidDate(LocalDate.parse(date))) {
+            throw new DateTimeParseException("Incorrect date format. it should match yyyy-MM-dd!", date, -1);
         }
 
-        trainingService.updateTraining(athleteId, date, trainingType, setsAmount);
+        trainingService.updateTraining(athleteId, LocalDate.parse(date), trainingType, setsAmount);
     }
 
     public List<Training> showHistoryTrainingsSortedByDate(Long athleteId) {
@@ -62,12 +59,11 @@ public class AthleteController {
         return trainingService.getTrainingsSortedBySetsAmount(athleteId);
     }
 
-    public void deleteTraining(Long athleteId, LocalDate date) {
-        if (!isValidDate(date)) {
-            throw new NotValidArgumentException("Incorrect date format. it should match yyyy-MM-dd!");
+    public void deleteTraining(Long athleteId, String date) {
+        if (!isValidDate(LocalDate.parse(date))) {
+            throw new InvalidArgumentException("Incorrect date format. it should match yyyy-MM-dd!");
         }
-
-        trainingService.deleteTraining(athleteId, date);
+        trainingService.deleteTraining(athleteId, LocalDate.parse(date));
     }
 
     public List<Athlete> showAllClients() {
@@ -82,24 +78,19 @@ public class AthleteController {
         trainingTypeService.delete(trainingTypeName);
     }
 
-    public List<Audit> showAuditsByAthleteId(String athlete) {
-        return auditService.getAllAuditsByAthleteId(athlete);
+    public List<Audit> showAuditsByAthleteLogin(String login) {
+        return auditService.getAllAuditsByAthleteLogin(login);
     }
 
     private boolean isValidNum(String... inputs) {
-        for (String input : inputs) {
-            if (!input.matches("\\d+")) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.stream(inputs)
+                .allMatch(input -> input.matches("[1-9]\\d*"));
     }
 
     private boolean isValidDate(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        String formattedDate = date.format(formatter);
-
+        String dateFormat = "yyyy-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+        String formattedDate = formatter.format(date);
         return formattedDate.equals(date.toString());
     }
 }
