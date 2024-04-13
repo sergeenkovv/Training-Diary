@@ -6,6 +6,7 @@ import com.ivan.exception.TrainingNotFoundException;
 import com.ivan.model.ActionType;
 import com.ivan.model.Athlete;
 import com.ivan.model.Training;
+import com.ivan.model.TrainingType;
 import com.ivan.service.AthleteService;
 import com.ivan.service.AuditService;
 import com.ivan.service.TrainingService;
@@ -16,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static com.ivan.model.ActionType.ADD_TRAINING;
 
@@ -29,17 +29,17 @@ public class TrainingServiceImpl implements TrainingService {
     private final AthleteService athleteService;
 
     @Override
-    public void addTraining(Long athleteId, String trainingType, Integer setsAmount, LocalDate date) {
+    public void addTraining(Long athleteId, String trainingType, Integer setsAmount) {
         Athlete athlete = getAthleteByAthleteId(athleteId);
 
-        if (!isValidTraining(athleteId, date)) {
+        if (!isValidTraining(athleteId)) {
             throw new TrainingLimitExceededException("You cannot do one type of training more than once a day!");
         }
 
         Training training = Training.builder()
                 .trainingType(trainingTypeService.getByTypeName(trainingType))
                 .setsAmount(setsAmount)
-                .date(date)
+                .date(LocalDate.now())
                 .athleteId(athleteId)
                 .build();
 
@@ -53,18 +53,14 @@ public class TrainingServiceImpl implements TrainingService {
     public void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
         Athlete athlete = getAthleteByAthleteId(athleteId);
 
-        Optional<Training> trainingOptional = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
+        TrainingType byTypeName = trainingTypeService.getByTypeName(trainingType);
 
-        if (trainingOptional.isEmpty()) {
-            throw new TrainingNotFoundException("Training not found!");
-        }
+        Training existingTraining = getTrainingByIdAndDate(athleteId, date);
+        existingTraining.setTrainingType(byTypeName);
+        existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
 
         auditService.audit(
                 ActionType.UPDATE_TRAINING, athlete.getLogin());
-
-        Training existingTraining = trainingOptional.get();
-        existingTraining.setTrainingType(trainingTypeService.getByTypeName(trainingType));
-        existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
     }
 
     @Override
@@ -94,25 +90,22 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public void deleteTraining(Long athleteId, LocalDate date) {
         Athlete athlete = getAthleteByAthleteId(athleteId);
-
-        Optional<Training> trainingOptional = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
-
-        if (trainingOptional.isEmpty()) {
-            throw new TrainingNotFoundException("Training not found!");
-        }
+        trainingDao.delete(getTrainingByIdAndDate(athleteId, date));
 
         auditService.audit(
                 ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athlete.getLogin());
-
-        Training trainingToDelete = trainingOptional.get();
-        trainingDao.delete(trainingToDelete);
     }
 
-    private boolean isValidTraining(Long athleteId, LocalDate date) {
+    private Training getTrainingByIdAndDate(Long athleteId, LocalDate date) {
+        return trainingDao.findByAthleteIdAndTrainingDate(athleteId, date)
+                .orElseThrow(() -> new TrainingNotFoundException("Training not found!"));
+    }
+
+    private boolean isValidTraining(Long athleteId) {
         List<Training> allTrainingByLogin = trainingDao.findAllByAthleteId(athleteId);
 
         return allTrainingByLogin.stream()
-                .noneMatch(training -> training.getDate().equals(date));
+                .noneMatch(training -> training.getDate().equals(LocalDate.now()));
     }
 
     private Athlete getAthleteByAthleteId(Long id) {

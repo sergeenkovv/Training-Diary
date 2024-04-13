@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TrainingService {
 
-    void addTraining(Long athleteId, String trainingType, Integer setsAmount, LocalDate date);
+    void addTraining(Long athleteId, String trainingType, Integer setsAmount);
 
     void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount);
 
