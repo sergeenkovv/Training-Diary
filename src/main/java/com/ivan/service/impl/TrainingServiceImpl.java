@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static com.ivan.model.ActionType.ADD_TRAINING;
 
@@ -30,8 +29,6 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void addTraining(Long athleteId, String trainingType, Integer setsAmount) {
-        Athlete athlete = getAthleteByAthleteId(athleteId);
-
         if (!isValidTraining(athleteId)) {
             throw new TrainingLimitExceededException("You cannot do one type of training more than once a day!");
         }
@@ -43,6 +40,7 @@ public class TrainingServiceImpl implements TrainingService {
                 .athleteId(athleteId)
                 .build();
 
+        Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ADD_TRAINING, athlete.getLogin());
 
@@ -51,47 +49,46 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
-        Athlete athlete = getAthleteByAthleteId(athleteId);
-
         TrainingType byTypeName = trainingTypeService.getByTypeName(trainingType);
-
         Training existingTraining = getTrainingByIdAndDate(athleteId, date);
+
         existingTraining.setTrainingType(byTypeName);
         existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
 
+        Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ActionType.UPDATE_TRAINING, athlete.getLogin());
     }
 
     @Override
     public List<Training> getTrainingsSortedByDate(Long athleteId) {
-        Athlete athlete = getAthleteByAthleteId(athleteId);
+        List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
+        allByAthleteId.sort(Comparator.comparing(Training::getDate));
 
+        Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ActionType.GET_TRAININGS_SORTED_BY_DATE, athlete.getLogin());
 
-        List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
-        allByAthleteId.sort(Comparator.comparing(Training::getDate));
         return allByAthleteId;
     }
 
     @Override
     public List<Training> getTrainingsSortedBySetsAmount(Long athleteId) {
-        Athlete athlete = getAthleteByAthleteId(athleteId);
+        List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
+        allByAthleteId.sort(Comparator.comparingInt(Training::getSetsAmount).reversed());
 
+        Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athlete.getLogin());
 
-        List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
-        allByAthleteId.sort(Comparator.comparingInt(Training::getSetsAmount).reversed());
         return allByAthleteId;
     }
 
     @Override
     public void deleteTraining(Long athleteId, LocalDate date) {
-        Athlete athlete = getAthleteByAthleteId(athleteId);
         trainingDao.delete(getTrainingByIdAndDate(athleteId, date));
 
+        Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athlete.getLogin());
     }
@@ -106,10 +103,5 @@ public class TrainingServiceImpl implements TrainingService {
 
         return allTrainingByLogin.stream()
                 .noneMatch(training -> training.getDate().equals(LocalDate.now()));
-    }
-
-    private Athlete getAthleteByAthleteId(Long id) {
-        return athleteService.getAthleteById(id)
-                .orElseThrow(() -> new NoSuchElementException("No athlete found with ID: " + id));
     }
 }

@@ -10,4 +10,6 @@ public interface AthleteService {
     List<Athlete> showAllAthlete();
 
     Optional<Athlete> getAthleteById(Long id);
+
+    Athlete getAthleteByAthleteId(Long id);
 }
