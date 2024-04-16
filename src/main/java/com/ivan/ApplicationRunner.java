@@ -104,6 +104,7 @@ public class ApplicationRunner {
                   0. Quit the application.
                 ╚═════════════════════════════════════════════════╝
                   """;
+
         while (true) {
             outputData.output(menu);
             String input = inputData.input().toString();
@@ -146,6 +147,7 @@ public class ApplicationRunner {
                  0. Quit the application.
                  ╚═════════════════════════════════════════════════╝
                 """;
+
         while (true) {
             outputData.output(menu);
             String input = inputData.input().toString();

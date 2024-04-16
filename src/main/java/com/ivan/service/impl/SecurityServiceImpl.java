@@ -11,12 +11,27 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
+/**
+ * Implementation of the {@link SecurityService} interface providing
+ * functionality for athlete registration and authorization.
+ *
+ * Requires an {@link AthleteDao} and an {@link AuditService} to be
+ * injected for data access and auditing purposes respectively.
+ */
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
     private final AuditService auditService;
 
+    /**
+     * Registers a new athlete with the provided login and password.
+     *
+     * @param login    The login for the new athlete.
+     * @param password The password for the new athlete.
+     * @return The registered athlete.
+     * @throws RegistrationException If an athlete with the same login already exists.
+     */
     @Override
     public Athlete registration(String login, String password) {
         Optional<Athlete> athlete = athleteDao.findByLogin(login);
@@ -36,6 +51,15 @@ public class SecurityServiceImpl implements SecurityService {
         return athleteDao.save(newAthlete);
     }
 
+    /**
+     * Authorizes an athlete with the provided login and password.
+     *
+     * @param login    The login of the athlete.
+     * @param password The password of the athlete.
+     * @return The authorized athlete.
+     * @throws AuthorizationException If no athlete with the provided login is found
+     *                                or if the provided password is incorrect.
+     */
     @Override
     public Athlete authorization(String login, String password) {
         Optional<Athlete> maybeAthlete = athleteDao.findByLogin(login);

@@ -31,14 +31,14 @@ class AuditServiceImplTest {
 
         Audit audit1 = Audit.builder()
                 .id(1L)
-                .login(login)
+                .AthleteLogin(login)
                 .actionType(ActionType.ADD_TRAINING)
                 .date(LocalDate.now())
                 .build();
 
         Audit audit2 = Audit.builder()
                 .id(2L)
-                .login(login)
+                .AthleteLogin(login)
                 .actionType(ActionType.REGISTRATION)
                 .date(LocalDate.now())
                 .build();
