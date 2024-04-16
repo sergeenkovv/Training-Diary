@@ -19,9 +19,18 @@ import com.ivan.service.impl.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A simple application context for managing beans and dependencies.
+ * This class provides methods to load context, manage authentication, and retrieve beans.
+ */
 public class ApplicationContext {
+
     private static final Map<String, Object> CONTEXT = new HashMap<>();
 
+    /**
+     * Loads the application context with required beans.
+     * This includes loading DAOs, services, controllers, and input/output components.
+     */
     public static void loadContext() {
         loadDaoLayer();
         loadServiceLayer();
@@ -29,22 +38,45 @@ public class ApplicationContext {
         loadInputOutputLayer();
     }
 
+    /**
+     * Loads the authorized athlete into the context.
+     *
+     * @param athlete the authenticated athlete
+     */
     public static void loadAuthorizeAthlete(Athlete athlete) {
         CONTEXT.put("authorize", athlete);
     }
 
+    /**
+     * Cleans the authorized athlete from the context.
+     */
     public static void cleanAuthorizeAthlete() {
         CONTEXT.remove("authorize");
     }
 
+    /**
+     * Retrieves the authorized athlete from the context.
+     *
+     * @return the authorized athlete
+     */
     public static Athlete getAuthorizeAthlete() {
         return (Athlete) CONTEXT.get("authorize");
     }
 
+    /**
+     * Retrieves a bean by its name from the context.
+     *
+     * @param beanName the name of the bean to retrieve
+     * @return the bean object
+     */
     public static Object getBean(String beanName) {
         return CONTEXT.get(beanName);
     }
 
+    /**
+     * Loads the DAO layer implementations into the application context.
+     * This includes instantiating and storing DAO objects for athlete, training, training type, and audit.
+     */
     private static void loadDaoLayer() {
         CONTEXT.put("athleteDao", new MemoryAthleteDaoImpl());
         CONTEXT.put("trainingDao", new MemoryTrainingDaoImpl());
@@ -52,6 +84,10 @@ public class ApplicationContext {
         CONTEXT.put("auditDao", new MemoryAuditDaoImpl());
     }
 
+    /**
+     * Loads the service layer implementations into the application context.
+     * This includes creating service objects with injected dependencies and storing them in the context.
+     */
     private static void loadServiceLayer() {
         AuditService auditService = new AuditServiceImpl(
                 (AuditDao) CONTEXT.get("auditDao")
@@ -83,6 +119,10 @@ public class ApplicationContext {
         CONTEXT.put("trainingService", trainingService);
     }
 
+    /**
+     * Loads the controller layer implementations into the application context.
+     * This includes creating controller objects with injected services and storing them in the context.
+     */
     private static void loadControllers() {
         AthleteController athleteController = new AthleteController(
                 (AthleteService) CONTEXT.get("athleteService"),
@@ -98,6 +138,10 @@ public class ApplicationContext {
         CONTEXT.put("securityController", securityController);
     }
 
+    /**
+     * Loads the input/output layer components into the application context.
+     * This includes creating and storing input/output objects for console interaction.
+     */
     private static void loadInputOutputLayer() {
         CONTEXT.put("input", new ConsoleInputData());
         CONTEXT.put("output", new ConsoleOutputData());
