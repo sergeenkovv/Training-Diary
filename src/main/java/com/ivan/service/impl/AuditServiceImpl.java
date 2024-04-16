@@ -7,7 +7,6 @@ import com.ivan.service.AuditService;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,7 +16,7 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<Audit> getAllAuditsByAthleteLogin(String login) {
-        return auditDao.findAllByAthleteLogin(login);
+        return auditDao.findAllByLogin(login);
     }
 
     @Override
@@ -27,10 +26,7 @@ public class AuditServiceImpl implements AuditService {
                 .login(login)
                 .date(LocalDate.now())
                 .build();
-        save(audit);
-    }
 
-    public Audit save(Audit audit) {
-        return auditDao.save(audit);
+        auditDao.save(audit);
     }
 }

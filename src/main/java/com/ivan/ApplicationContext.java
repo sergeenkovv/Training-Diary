@@ -59,8 +59,7 @@ public class ApplicationContext {
         CONTEXT.put("auditService", auditService);
 
         AthleteService athleteService = new AthleteServiceImpl(
-                (AthleteDao) CONTEXT.get("athleteDao"),
-        (AthleteService) CONTEXT.get("athleteService")
+                (AthleteDao) CONTEXT.get("athleteDao")
         );
         CONTEXT.put("athleteService", athleteService);
 

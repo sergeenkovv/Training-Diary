@@ -9,11 +9,13 @@ public interface TrainingService {
 
     void addTraining(Long athleteId, String trainingType, Integer setsAmount);
 
-    void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount);
+    void editTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount);
 
     List<Training> getTrainingsSortedByDate(Long athleteId);
 
     List<Training> getTrainingsSortedBySetsAmount(Long athleteId);
 
     void deleteTraining(Long athleteId, LocalDate date);
+
+    Training getTrainingByAthleteIdAndDate(Long athleteId, LocalDate date);
 }
