@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface TrainingTypeService {
 
-    List<TrainingType> getAvailableTrainingTypes();
+    List<TrainingType> getAllTrainingTypes();
 
-    void save (TrainingType trainingType);
+    void addTrainingType(TrainingType trainingType);
 
-    void delete(String trainingTypeName);
+    void deleteTrainingType(String trainingTypeName);
 
     TrainingType getByTypeName(String typeName);
 

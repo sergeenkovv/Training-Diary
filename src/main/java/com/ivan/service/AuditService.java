@@ -10,6 +10,4 @@ public interface AuditService {
     List<Audit> getAllAuditsByAthleteLogin(String login);
 
     void audit(ActionType actionType, String login);
-
-    Audit save(Audit audit);
 }

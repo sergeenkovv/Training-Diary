@@ -14,16 +14,17 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     private final TrainingTypeDao trainingTypeDao;
 
     @Override
-    public List<TrainingType> getAvailableTrainingTypes() {
+    public List<TrainingType> getAllTrainingTypes() {
         return trainingTypeDao.findAll();
     }
 
     @Override
-    public void save(TrainingType trainingType) {
+    public void addTrainingType(TrainingType trainingType) {
         trainingTypeDao.save(trainingType);
     }
 
-    public void delete(String trainingTypeName) {
+    @Override
+    public void deleteTrainingType(String trainingTypeName) {
         trainingTypeDao.delete(getByTypeName(trainingTypeName));
     }
 

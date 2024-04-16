@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static com.ivan.model.ActionType.ADD_TRAINING;
 
@@ -29,7 +30,9 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void addTraining(Long athleteId, String trainingType, Integer setsAmount) {
-        if (!isValidTraining(athleteId)) {
+        Optional<Training> maybeTraining = trainingDao.findByAthleteIdAndTrainingDate(athleteId, LocalDate.now());
+
+        if (maybeTraining.isPresent()) {
             throw new TrainingLimitExceededException("You cannot do one type of training more than once a day!");
         }
 
@@ -48,9 +51,9 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public void updateTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
+    public void editTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
         TrainingType byTypeName = trainingTypeService.getByTypeName(trainingType);
-        Training existingTraining = getTrainingByIdAndDate(athleteId, date);
+        Training existingTraining = getTrainingByAthleteIdAndDate(athleteId, date);
 
         existingTraining.setTrainingType(byTypeName);
         existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
@@ -86,22 +89,16 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public void deleteTraining(Long athleteId, LocalDate date) {
-        trainingDao.delete(getTrainingByIdAndDate(athleteId, date));
+        trainingDao.delete(getTrainingByAthleteIdAndDate(athleteId, date));
 
         Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
                 ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athlete.getLogin());
     }
 
-    private Training getTrainingByIdAndDate(Long athleteId, LocalDate date) {
+    @Override
+    public Training getTrainingByAthleteIdAndDate(Long athleteId, LocalDate date) {
         return trainingDao.findByAthleteIdAndTrainingDate(athleteId, date)
                 .orElseThrow(() -> new TrainingNotFoundException("Training not found!"));
-    }
-
-    private boolean isValidTraining(Long athleteId) {
-        List<Training> allTrainingByLogin = trainingDao.findAllByAthleteId(athleteId);
-
-        return allTrainingByLogin.stream()
-                .noneMatch(training -> training.getDate().equals(LocalDate.now()));
     }
 }
