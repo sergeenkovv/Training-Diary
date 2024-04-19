@@ -23,10 +23,6 @@ public class Training {
      */
     private Long id;
     /**
-     * The type of training session.
-     */
-    private TrainingType trainingType;
-    /**
      * The number of sets in the training session.
      */
     private Integer setsAmount;
@@ -34,6 +30,10 @@ public class Training {
      * The date of the training session.
      */
     private LocalDate date;
+    /**
+     * The type of training session.
+     */
+    private Long typeId;
     /**
      * The ID of the athlete associated with the training session.
      */

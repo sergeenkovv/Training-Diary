@@ -26,7 +26,7 @@ public class Audit {
     /**
      * The login username associated with the audit action.
      */
-    private String AthleteLogin;
+    private String athleteLogin;
 
     /**
      * The type of action performed in the audit.
