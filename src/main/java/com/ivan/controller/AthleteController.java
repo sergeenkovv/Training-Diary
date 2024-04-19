@@ -48,9 +48,9 @@ public class AthleteController {
     /**
      * Adds a training session for the specified athlete.
      *
-     * @param athleteId   the ID of the athlete
+     * @param athleteId    the ID of the athlete
      * @param trainingType the type of training to add
-     * @param setsAmount  the number of sets for the training
+     * @param setsAmount   the number of sets for the training
      * @throws InvalidArgumentException if the sets amount provided is not a valid number
      */
     public void addTraining(Long athleteId, String trainingType, String setsAmount) {
@@ -58,18 +58,18 @@ public class AthleteController {
             throw new InvalidArgumentException("Enter a number greater than 0. letters cannot be used!");
         }
 
-        trainingService.addTraining(athleteId, trainingType, Integer.parseInt(setsAmount));
+        trainingService.addTraining(athleteId, Long.valueOf(trainingType), Integer.parseInt(setsAmount));
     }
 
     /**
      * Edits a training session for the specified athlete and date.
      *
-     * @param athleteId   the ID of the athlete
-     * @param date        the date of the training to edit
+     * @param athleteId    the ID of the athlete
+     * @param date         the date of the training to edit
      * @param trainingType the new type of training
-     * @param setsAmount  the new number of sets
+     * @param setsAmount   the new number of sets
      * @throws InvalidArgumentException if the sets amount provided is not a valid number,
-     *                                   or if the date provided is not in the correct format
+     *                                  or if the date provided is not in the correct format
      */
     public void editTrainingByAthleteIdAndTrainingDate(Long athleteId, String date, String trainingType, String setsAmount) {
         if (!isValidNum(setsAmount)) {
@@ -80,7 +80,7 @@ public class AthleteController {
             throw new DateTimeParseException("Incorrect date format. it should match yyyy-MM-dd!", date, -1);
         }
 
-        trainingService.editTraining(athleteId, LocalDate.parse(date), trainingType, setsAmount);
+        trainingService.editTraining(athleteId, LocalDate.parse(date), Long.valueOf(trainingType), setsAmount);
     }
 
     /**
@@ -140,8 +140,8 @@ public class AthleteController {
      *
      * @param trainingTypeName the name of the training type to delete
      */
-    public void deleteTrainingType(String trainingTypeName) {
-        trainingTypeService.deleteTrainingType(trainingTypeName);
+    public void deleteTrainingType(Long id) {
+        trainingTypeService.deleteTrainingType(id);
     }
 
     /**

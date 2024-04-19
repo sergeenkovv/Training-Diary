@@ -37,8 +37,8 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public void audit(ActionType actionType, String login) {
         Audit audit = Audit.builder()
+                .athleteLogin(login)
                 .actionType(actionType)
-                .AthleteLogin(login)
                 .date(LocalDate.now())
                 .build();
 

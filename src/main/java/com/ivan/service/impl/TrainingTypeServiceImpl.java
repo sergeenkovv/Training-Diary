@@ -41,11 +41,11 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     /**
      * Deletes a training type by its name.
      *
-     * @param trainingTypeName the name of the training type to delete
+     * @param id the name of the training type to delete
      */
     @Override
-    public void deleteTrainingType(String trainingTypeName) {
-        trainingTypeDao.delete(getByTypeName(trainingTypeName));
+    public void deleteTrainingType(Long id) {
+        trainingTypeDao.delete(getByTypeId(id).getId());
     }
 
     /**
@@ -56,8 +56,8 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
      * @throws InvalidTrainingTypeException if the training type is not found
      */
     @Override
-    public TrainingType getByTypeName(String typeName) {
-        return trainingTypeDao.findByTypeName(typeName)
+    public TrainingType getByTypeId(Long id) {
+        return trainingTypeDao.findById(id)
                 .orElseThrow(() -> new InvalidTrainingTypeException("Such type of training does not exist!"));
     }
 }
