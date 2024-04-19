@@ -1,6 +1,7 @@
 package com.ivan.service.impl;
 
 import com.ivan.dao.TrainingDao;
+import com.ivan.dao.TrainingTypeDao;
 import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.exception.TrainingLimitExceededException;
 import com.ivan.exception.TrainingNotFoundException;
@@ -39,6 +40,8 @@ class TrainingServiceImplTest {
     @Mock
     private TrainingDao trainingDao;
     @Mock
+    private TrainingTypeDao trainingTypeDao;
+    @Mock
     private TrainingTypeService trainingTypeService;
     @Mock
     private AthleteService athleteService;
@@ -67,40 +70,36 @@ class TrainingServiceImplTest {
 
         training1 = Training.builder()
                 .id(1L)
-                .trainingType(trainingType)
                 .setsAmount(3)
                 .date(LocalDate.now())
+                .typeId(trainingType.getId())
                 .athleteId(athlete.getId())
                 .build();
 
         training2 = Training.builder()
                 .id(2L)
-                .trainingType(trainingType)
                 .setsAmount(8)
                 .date(LocalDate.parse("2022-11-11"))
+                .typeId(trainingType.getId())
                 .athleteId(athlete.getId())
                 .build();
 
         training3 = Training.builder()
                 .id(3L)
-                .trainingType(trainingType)
                 .setsAmount(5)
                 .date(LocalDate.parse("2020-11-11"))
+                .typeId(trainingType.getId())
                 .athleteId(athlete.getId())
                 .build();
     }
 
     @Test
     void addTraining_Success() {
-        Long athleteId = 1L;
-        String trainingType = "LEGS";
-        Integer setsAmount = 3;
-
         when(trainingDao.findByAthleteIdAndTrainingDate(anyLong(), any(LocalDate.class))).thenReturn(Optional.empty());
-        when(trainingTypeService.getByTypeName(trainingType)).thenReturn(new TrainingType());
-        when(athleteService.getAthleteByAthleteId(athleteId)).thenReturn(new Athlete());
+        when(athleteService.getAthleteByAthleteId(training1.getAthleteId())).thenReturn(new Athlete());
+        when(trainingTypeService.getByTypeId(training1.getTypeId())).thenReturn(trainingType);
 
-        trainingService.addTraining(athleteId, trainingType, setsAmount);
+        trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount());
 
         verify(trainingDao, times(1)).save(any(Training.class));
     }
@@ -110,28 +109,40 @@ class TrainingServiceImplTest {
         when(trainingDao.findByAthleteIdAndTrainingDate(training1.getId(), LocalDate.now())).thenReturn(Optional.ofNullable(training1));
 
         assertThrows(TrainingLimitExceededException.class,
-                () -> trainingService.addTraining(training1.getAthleteId(), training1.getTrainingType().getTypeName(), training1.getSetsAmount()));
+                () -> trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount()));
+    }
+
+    @Test
+    void addTraining_InvalidTrainingTypeException() {
+        when(trainingDao.findByAthleteIdAndTrainingDate(training1.getId(), LocalDate.now())).thenReturn(Optional.ofNullable(training1));
+        when(trainingTypeService.getByTypeId(anyLong()))
+                .thenThrow(new InvalidTrainingTypeException("Such type of training does not exist!"));
+
+        assertThrows(InvalidTrainingTypeException.class,
+                () -> trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount()));
     }
 
     @Test
     void editTraining_Success() {
-        when(trainingTypeService.getByTypeName(trainingType.getTypeName())).thenReturn(trainingType);
+        when(trainingTypeService.getByTypeId(trainingType.getId())).thenReturn(trainingType);
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
         when(athleteService.getAthleteByAthleteId(training1.getId())).thenReturn(athlete);
 
-        trainingService.editTraining(athlete.getId(), training1.getDate(), trainingType.getTypeName(), "5");
+        trainingService.editTraining(athlete.getId(), training1.getDate(), trainingType.getId(), "5");
 
-        verify(trainingTypeService).getByTypeName(trainingType.getTypeName());
+        verify(trainingTypeService).getByTypeId(trainingType.getId());
         verify(trainingDao).findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate());
         assertEquals(5, training1.getSetsAmount());
     }
 
     @Test
     void editTraining_InvalidTrainingTypeException() {
-        when(trainingTypeService.getByTypeName(trainingType.getTypeName())).thenThrow(InvalidTrainingTypeException.class);
+        when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
+        when(trainingTypeService.getByTypeId(anyLong()))
+                .thenThrow(new InvalidTrainingTypeException("Such type of training does not exist!"));
 
         assertThrows(InvalidTrainingTypeException.class,
-                () -> trainingService.editTraining(training1.getAthleteId(), LocalDate.now(), trainingType.getTypeName(), String.valueOf(training1.getSetsAmount())));
+                () -> trainingService.editTraining(training1.getAthleteId(), training1.getDate(), training1.getTypeId(), String.valueOf(training1.getSetsAmount())));
     }
 
     @Test
@@ -139,7 +150,7 @@ class TrainingServiceImplTest {
         when(trainingDao.findByAthleteIdAndTrainingDate(training1.getAthleteId(), LocalDate.now())).thenReturn(Optional.empty());
 
         assertThrows(TrainingNotFoundException.class,
-                () -> trainingService.editTraining(training1.getAthleteId(), LocalDate.now(), trainingType.getTypeName(), String.valueOf(training1.getSetsAmount())));
+                () -> trainingService.editTraining(training1.getAthleteId(), LocalDate.now(), training1.getTypeId(), String.valueOf(training1.getSetsAmount())));
     }
 
     @Test
@@ -176,7 +187,7 @@ class TrainingServiceImplTest {
 
         trainingService.deleteTraining(training1.getAthleteId(), training1.getDate());
 
-        verify(trainingDao).delete(training1);
+        verify(trainingDao).delete(training1.getId());
     }
 
     @Test
