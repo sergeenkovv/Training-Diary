@@ -7,6 +7,7 @@ import com.ivan.model.Athlete;
 import com.ivan.model.Role;
 import com.ivan.service.AuditService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@DisplayName("securityServiceImpl implementation test")
 @ExtendWith(MockitoExtension.class)
 class SecurityServiceImplTest {
 
@@ -45,6 +47,7 @@ class SecurityServiceImplTest {
                 .build();
     }
 
+    @DisplayName("Test registration method")
     @Test
     void registration_Success() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.empty());
@@ -55,6 +58,7 @@ class SecurityServiceImplTest {
         assertEquals(athlete.getPassword(), registerAthlete.getPassword());
     }
 
+    @DisplayName("Test registration method with exception")
     @Test
     void registration_RegistrationException() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
@@ -63,6 +67,7 @@ class SecurityServiceImplTest {
                 () -> securityServiceImpl.registration(athlete.getLogin(), athlete.getPassword()));
     }
 
+    @DisplayName("Test authorization method")
     @Test
     void authorization_Success() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
@@ -72,6 +77,7 @@ class SecurityServiceImplTest {
         assertThat(result).isEqualTo(athlete);
     }
 
+    @DisplayName("Test authorization method with incorrect password")
     @Test
     void authorization_WithIncorrectPassword_ThrowsAuthorizationException() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
@@ -81,6 +87,7 @@ class SecurityServiceImplTest {
                 .hasMessage("Incorrect password.");
     }
 
+    @DisplayName("Test authorization method with non existing athlete")
     @Test
     void authorization_WithNonExistingAthlete_ThrowsAuthorizationException() {
         when(athleteDao.findByLogin("nonExistingLogin")).thenReturn(Optional.empty());

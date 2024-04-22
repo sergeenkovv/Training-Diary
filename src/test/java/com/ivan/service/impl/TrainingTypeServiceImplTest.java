@@ -4,6 +4,7 @@ import com.ivan.dao.TrainingTypeDao;
 import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.model.TrainingType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@DisplayName("trainingTypeServiceImpl implementation test")
 @ExtendWith(MockitoExtension.class)
 class TrainingTypeServiceImplTest {
 
@@ -47,6 +49,7 @@ class TrainingTypeServiceImplTest {
         mockTrainingTypes = Arrays.asList(trainingType1, trainingType2);
     }
 
+    @DisplayName("Test getAllTrainingTypes method")
     @Test
     void getAvailableTrainingTypes_Success() {
         when(trainingTypeDao.findAll()).thenReturn(mockTrainingTypes);
@@ -56,6 +59,7 @@ class TrainingTypeServiceImplTest {
         assertThat(result).isEqualTo(mockTrainingTypes);
     }
 
+    @DisplayName("Test addTrainingType method")
     @Test
     void addTrainingType_Success() {
         TrainingType newTrainingType = TrainingType.builder()
@@ -68,6 +72,7 @@ class TrainingTypeServiceImplTest {
         verify(trainingTypeDao).save(newTrainingType);
     }
 
+    @DisplayName("Test deleteTrainingType method")
     @Test
     void delete_Success() {
         when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.of(trainingType1));
@@ -77,6 +82,7 @@ class TrainingTypeServiceImplTest {
         verify(trainingTypeDao, times(1)).delete(trainingType1.getId());
     }
 
+    @DisplayName("Test deleteTrainingType method with exception")
     @Test
     void delete_InvalidTrainingTypeException() {
         when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.empty());
@@ -86,6 +92,7 @@ class TrainingTypeServiceImplTest {
                 .hasMessage("Such type of training does not exist!");
     }
 
+    @DisplayName("Test getByTypeId method")
     @Test
     void getByTypeName_Success() {
         String typeName = "CHEST";
@@ -102,6 +109,7 @@ class TrainingTypeServiceImplTest {
         assertThat(result).isEqualTo(expectedTrainingType);
     }
 
+    @DisplayName("Test getByTypeId method with exception")
     @Test
     void getByTypeName_InvalidTrainingTypeException() {
         Long typeName = null;
