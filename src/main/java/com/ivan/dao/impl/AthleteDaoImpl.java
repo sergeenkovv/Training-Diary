@@ -61,12 +61,12 @@ public class AthleteDaoImpl implements AthleteDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlFindAll)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            List<Athlete> users = new ArrayList<>();
+            List<Athlete> athletes = new ArrayList<>();
             while (resultSet.next()) {
-                users.add(buildAthlete(resultSet));
+                athletes.add(buildAthlete(resultSet));
             }
 
-            return users;
+            return athletes;
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }

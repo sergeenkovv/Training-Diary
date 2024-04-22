@@ -62,7 +62,7 @@
 | id          | BIGINT       | The unique identifier for the training session, the primary key |
 | sets_amount | VARCHAR(255) | The number of sets in the training session.                     |
 | date        | TIMESTAMP    | The date of the training session                                |
-| type_id     | BIGINT)      | The type of training session                                    |
+| type_id     | BIGINT       | The type of training session                                    |
 | athlete_id  | BIGINT       | The ID of the athlete associated with the training session      |
 
 ### `training_types`
@@ -83,9 +83,11 @@
 
 ## Startup instructions
 
-1. Run the application: ` TrainingDiaryApplication `.r
+1. Start docker container with database. Run the command in the terminal in the root directory of the
+      project: ` docker compose up `.
+2. Run the application: ` TrainingDiaryApplication `.
 
-## Contact mer
+## Contact me
 
 + Email: [itproger181920@gmail.com](https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to=itproger181920@gmail.com) 📬
 + Telegram: [@itproger181920](https://t.me/itproger181920) ✈️

@@ -24,12 +24,12 @@ public class TrainingTypeDaoImpl implements TrainingTypeDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlFindAll)) {
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            List<TrainingType> meterTypes = new ArrayList<>();
+            List<TrainingType> trainingType = new ArrayList<>();
             while (resultSet.next()) {
-                meterTypes.add(buildTrainingType(resultSet));
+                trainingType.add(buildTrainingType(resultSet));
             }
 
-            return meterTypes;
+            return trainingType;
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
         }

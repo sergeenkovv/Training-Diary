@@ -18,11 +18,11 @@ public class TrainingDaoImpl implements TrainingDao {
 
     @Override
     public List<Training> findAllByAthleteId(Long athleteId) {
-        String sqlFindAllByUserId = """
+        String sqlFindAllByAthleteId = """
                 SELECT * FROM develop.trainings WHERE athlete_id = ?
                 """;
         try (Connection connection = connectionProvider.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sqlFindAllByUserId)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlFindAllByAthleteId)) {
             preparedStatement.setLong(1, athleteId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Training> result = new ArrayList<>();
@@ -56,7 +56,7 @@ public class TrainingDaoImpl implements TrainingDao {
     @Override
     public Optional<Training> findByAthleteIdAndTrainingDate(Long athleteId, LocalDate date) {
         String sqlFindById = """
-                SELECT * FROM develop.trainings WHERE id = ? AND date = ?
+                SELECT * FROM develop.trainings WHERE athlete_id = ? AND date = ?
                 """;
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlFindById)) {

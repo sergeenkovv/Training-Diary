@@ -24,7 +24,7 @@ public class Audit {
     private Long id;
 
     /**
-     * The login username associated with the audit action.
+     * The login athlete`s associated with the audit action.
      */
     private String athleteLogin;
 

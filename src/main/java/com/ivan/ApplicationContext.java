@@ -12,7 +12,7 @@ import com.ivan.dao.impl.TrainingDaoImpl;
 import com.ivan.dao.impl.TrainingTypeDaoImpl;
 import com.ivan.in.ConsoleInputData;
 import com.ivan.in.ConsoleOutputData;
-import com.ivan.liquibase.LiquibaseDemo;
+import com.ivan.liquibase.LiquibaseMigration;
 import com.ivan.model.Athlete;
 import com.ivan.service.*;
 import com.ivan.service.impl.*;
@@ -59,8 +59,8 @@ public class ApplicationContext {
                 PropertiesUtil.get(PASSWORD_KEY)
         );
 
-        LiquibaseDemo liquibaseDemo = LiquibaseDemo.getInstance();
-        liquibaseDemo.runMigrations(connectionManager.getConnection());
+        LiquibaseMigration liquibaseMigration = LiquibaseMigration.getInstance();
+        liquibaseMigration.runMigrations(connectionManager.getConnection());
 
         CONTEXT.put("connectionManager", connectionManager);
     }
