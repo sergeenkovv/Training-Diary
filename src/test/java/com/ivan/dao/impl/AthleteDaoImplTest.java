@@ -2,101 +2,95 @@ package com.ivan.dao.impl;
 
 import com.ivan.containers.PostgresTestContainer;
 import com.ivan.dao.AthleteDao;
-import com.ivan.liquibase.LiquibaseDemo;
+import com.ivan.liquibase.LiquibaseMigration;
 import com.ivan.model.Athlete;
 import com.ivan.model.Role;
 import com.ivan.util.ConnectionManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("athleteDao implementation test")
 class AthleteDaoImplTest extends PostgresTestContainer {
 
-    private AthleteDao athleteDao;
+    private final AthleteDao athleteDao;
 
-    @BeforeEach
-    public void setup() {
+    public AthleteDaoImplTest() {
         ConnectionManager connectionManager = new ConnectionManager(
                 container.getJdbcUrl(),
                 container.getUsername(),
                 container.getPassword()
         );
-        LiquibaseDemo liquibaseTest = LiquibaseDemo.getInstance();
+        LiquibaseMigration liquibaseTest = LiquibaseMigration.getInstance();
         liquibaseTest.runMigrations(connectionManager.getConnection());
 
         athleteDao = new AthleteDaoImpl(connectionManager);
     }
 
-    @Test
-    void findByLogin() {
-        Athlete athlete = Athlete.builder()
-                .login("ivan")
-                .password("123")
+    private Athlete athlete1;
+    private Athlete athlete2;
+
+    @BeforeEach
+    void setup() {
+        athlete1 = Athlete.builder()
+                .id(1L)
+                .login("Ivan")
+                .password("1234")
                 .role(Role.CLIENT)
                 .build();
-        athleteDao.save(athlete);
+        athleteDao.save(athlete1);
 
-        Optional<Athlete> foundAthlete = athleteDao.findByLogin("ivan");
+        athlete2 = Athlete.builder()
+                .id(2L)
+                .login("Lesha")
+                .password("4321")
+                .role(Role.CLIENT)
+                .build();
+        athleteDao.save(athlete1);
+    }
+
+    @DisplayName("findAllByLogin verification test")
+    @Test
+    void findByLogin() {
+        Optional<Athlete> foundAthlete = athleteDao.findByLogin(athlete1.getLogin());
         assertTrue(foundAthlete.isPresent());
-        assertEquals("ivan", foundAthlete.get().getLogin());
+        assertEquals("Ivan", foundAthlete.get().getLogin());
 
         Optional<Athlete> notFoundAthlete = athleteDao.findByLogin("NonExistentLogin");
         assertFalse(notFoundAthlete.isPresent());
     }
 
+    @DisplayName("findById verification test")
     @Test
     void findById() {
-        Athlete athlete = Athlete.builder()
-                .login("ivan")
-                .password("123")
-                .role(Role.CLIENT)
-                .build();
-        athleteDao.save(athlete);
-
-        Optional<Athlete> foundAthlete = athleteDao.findById(1L);
+        Optional<Athlete> foundAthlete = athleteDao.findById(athlete1.getId());
         assertTrue(foundAthlete.isPresent());
-        assertEquals("ivan", foundAthlete.get().getLogin());
+        assertEquals("Ivan", foundAthlete.get().getLogin());
 
         Optional<Athlete> notFoundUser = athleteDao.findById(999L);
         assertFalse(notFoundUser.isPresent());
     }
 
+    @DisplayName("findAll verification test")
     @Test
     void findAll() {
-        Athlete athlete1 = Athlete.builder()
-                .login("ivan")
-                .password("123")
-                .role(Role.CLIENT)
-                .build();
-        Athlete athlete2 = Athlete.builder()
-                .login("ivan")
-                .password("123")
-                .role(Role.CLIENT)
-                .build();
-
-        athleteDao.save(athlete1);
-        athleteDao.save(athlete2);
-
         List<Athlete> allAthlete = athleteDao.findAll();
         assertFalse(allAthlete.isEmpty());
+        assertEquals(3, allAthlete.size());
     }
 
+    @DisplayName("save verification test")
     @Test
     void save() {
-        Athlete athleteToSave = Athlete.builder()
-                .login("ivan")
-                .password("123")
-                .role(Role.CLIENT)
-                .build();
-        Athlete savedAthlete = athleteDao.save(athleteToSave);
+        Athlete savedAthlete = athlete1;
         assertNotNull(savedAthlete.getId());
-        assertEquals(athleteToSave.getLogin(), savedAthlete.getLogin());
-        assertEquals(athleteToSave.getPassword(), savedAthlete.getPassword());
-        assertEquals(athleteToSave.getRole(), savedAthlete.getRole());
+        assertEquals(athlete1.getLogin(), savedAthlete.getLogin());
+        assertEquals(athlete1.getPassword(), savedAthlete.getPassword());
+        assertEquals(athlete1.getRole(), savedAthlete.getRole());
     }
 }

@@ -6,25 +6,25 @@
 
     <changeSet id="114" author="ivan">
         <insert tableName="athletes" schemaName="develop">
-            <column name="id" value="-1"></column>
-            <column name="login" value="trainer"></column>
-            <column name="password" value="trainer"></column>
-            <column name="role" value="TRAINER"></column>
+            <column name="id" value="-1"/>
+            <column name="login" value="trainer"/>
+            <column name="password" value="trainer"/>
+            <column name="role" value="TRAINER"/>
         </insert>
     </changeSet>
 
     <changeSet id="124" author="ivan">
         <insert tableName="training_types" schemaName="develop">
-            <column name="type_name" value="CHEST"></column>
+            <column name="type_name" value="CHEST"/>
         </insert>
         <insert tableName="training_types" schemaName="develop">
-            <column name="type_name" value="BACK"></column>
+            <column name="type_name" value="BACK"/>
         </insert>
         <insert tableName="training_types" schemaName="develop">
-            <column name="type_name" value="SHOULDERS"></column>
+            <column name="type_name" value="SHOULDERS"/>
         </insert>
         <insert tableName="training_types" schemaName="develop">
-            <column name="type_name" value="LEGS"></column>
+            <column name="type_name" value="LEGS"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

@@ -2,91 +2,95 @@ package com.ivan.dao.impl;
 
 import com.ivan.containers.PostgresTestContainer;
 import com.ivan.dao.TrainingTypeDao;
-import com.ivan.liquibase.LiquibaseDemo;
+import com.ivan.liquibase.LiquibaseMigration;
 import com.ivan.model.TrainingType;
 import com.ivan.util.ConnectionManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("trainingTypeDao implementation test")
 class TrainingTypeDaoImplTest extends PostgresTestContainer {
 
-    private TrainingTypeDao trainingTypeDao;
+    private final TrainingTypeDao trainingTypeDao;
 
-    @BeforeEach
-    public void setup() {
+    public TrainingTypeDaoImplTest() {
         ConnectionManager connectionManager = new ConnectionManager(
                 container.getJdbcUrl(),
                 container.getUsername(),
                 container.getPassword()
         );
-        LiquibaseDemo liquibaseTest = LiquibaseDemo.getInstance();
+        LiquibaseMigration liquibaseTest = LiquibaseMigration.getInstance();
         liquibaseTest.runMigrations(connectionManager.getConnection());
 
         trainingTypeDao = new TrainingTypeDaoImpl(connectionManager);
     }
 
-    @Test
-    void findAll() {
-        TrainingType expectedType1 = TrainingType.builder()
-                .typeName("SHOULDERS")
+    List<TrainingType> mockTrainingTypes;
+    TrainingType trainingType1;
+    TrainingType trainingType2;
+
+    @BeforeEach
+    void setUp() {
+        trainingType1 = TrainingType.builder()
+                .id(1L)
+                .typeName("CHEST")
                 .build();
-        TrainingType expectedType2 = TrainingType.builder()
-                .typeName("BACK")
+        trainingType2 = TrainingType.builder()
+                .id(2L)
+                .typeName("LEGS")
                 .build();
 
-        trainingTypeDao.save(expectedType1);
-        trainingTypeDao.save(expectedType2);
+        trainingTypeDao.save(trainingType1);
+        trainingTypeDao.save(trainingType2);
 
-        List<TrainingType> trainingTypes = trainingTypeDao.findAll();
-
-        assertTrue(trainingTypes.contains(expectedType1));
-        assertTrue(trainingTypes.contains(expectedType2));
+        mockTrainingTypes = Arrays.asList(trainingType1, trainingType2);
     }
 
+    @DisplayName("findAll method verification test")
+    @Test
+    void findAll() {
+        List<TrainingType> trainingTypes = trainingTypeDao.findAll();
+
+        assertTrue(trainingTypes.contains(trainingType1));
+        assertTrue(trainingTypes.contains(trainingType2));
+    }
+
+    @DisplayName("findById method verification test")
     @Test
     void findById() {
-        TrainingType expectedType = TrainingType.builder()
-                .typeName("BACK")
-                .build();
-
-        trainingTypeDao.save(expectedType);
-
-        Optional<TrainingType> foundType = trainingTypeDao.findById(expectedType.getId());
+        Optional<TrainingType> foundType = trainingTypeDao.findById(trainingType1.getId());
         assertTrue(foundType.isPresent());
-        assertEquals(expectedType.getTypeName(), foundType.get().getTypeName());
+        assertEquals(trainingType1.getTypeName(), foundType.get().getTypeName());
 
         Optional<TrainingType> notFoundType = trainingTypeDao.findById(999L);
         assertFalse(notFoundType.isPresent());
     }
 
+    @DisplayName("delete method verification test")
     @Test
     void delete() {
-        TrainingType trainingType = TrainingType.builder()
-                .typeName("CHEST")
-                .build();
-        TrainingType savedTrainingType = trainingTypeDao.save(trainingType);
+        TrainingType savedTrainingType = trainingType1;
 
         Optional<TrainingType> training1 = trainingTypeDao.findById(savedTrainingType.getId());
         assertTrue(training1.isPresent());
 
-        trainingTypeDao.delete(trainingType.getId());
-        Optional<TrainingType> deletedAudit = trainingTypeDao.findById(trainingType.getId());
+        trainingTypeDao.delete(trainingType1.getId());
+        Optional<TrainingType> deletedAudit = trainingTypeDao.findById(trainingType1.getId());
         assertFalse(deletedAudit.isPresent());
     }
 
+    @DisplayName("save method verification test")
     @Test
     void save() {
-        TrainingType trainingTypeToSave = TrainingType.builder()
-                .typeName("CHEST")
-                .build();
-
-        TrainingType savedtrainingType = trainingTypeDao.save(trainingTypeToSave);
+        TrainingType savedtrainingType = trainingType1;
         assertNotNull(savedtrainingType.getId());
-        assertEquals(trainingTypeToSave.getTypeName(), savedtrainingType.getTypeName());
+        assertEquals(trainingType1.getTypeName(), savedtrainingType.getTypeName());
     }
 }

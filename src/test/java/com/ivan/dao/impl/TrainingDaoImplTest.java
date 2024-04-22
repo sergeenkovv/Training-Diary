@@ -1,152 +1,162 @@
 package com.ivan.dao.impl;
 
 import com.ivan.containers.PostgresTestContainer;
+import com.ivan.dao.AthleteDao;
 import com.ivan.dao.TrainingDao;
-import com.ivan.liquibase.LiquibaseDemo;
+import com.ivan.dao.TrainingTypeDao;
+import com.ivan.liquibase.LiquibaseMigration;
+import com.ivan.model.Athlete;
+import com.ivan.model.Role;
 import com.ivan.model.Training;
+import com.ivan.model.TrainingType;
 import com.ivan.util.ConnectionManager;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("trainingDao implementation test")
 class TrainingDaoImplTest extends PostgresTestContainer {
 
-    private TrainingDao trainingDao;
+    private final AthleteDao athleteDao;
+    private final TrainingDao trainingDao;
+    private final TrainingTypeDao trainingTypeDao;
 
-    @BeforeEach
-    void setup() {
+    public TrainingDaoImplTest() {
         ConnectionManager connectionManager = new ConnectionManager(
                 container.getJdbcUrl(),
                 container.getUsername(),
                 container.getPassword()
         );
-        LiquibaseDemo liquibaseTest = LiquibaseDemo.getInstance();
+        LiquibaseMigration liquibaseTest = LiquibaseMigration.getInstance();
         liquibaseTest.runMigrations(connectionManager.getConnection());
 
+        athleteDao = new AthleteDaoImpl(connectionManager);
         trainingDao = new TrainingDaoImpl(connectionManager);
+        trainingTypeDao = new TrainingTypeDaoImpl(connectionManager);
     }
 
-    @Test
-    void findAllByAthleteId() {
-        Training training1 = Training.builder()
-                .setsAmount(3)
-                .date(LocalDate.now())
-                .typeId(4L)
-                .athleteId(4L)
+    Athlete athlete;
+    Training training1;
+    Training training2;
+    Training training3;
+    TrainingType trainingType;
+
+    @BeforeEach
+    void setUp() {
+        athlete = Athlete.builder()
+                .id(1L)
+                .login("Ivan")
+                .password("1234")
+                .role(Role.CLIENT)
                 .build();
-        Training training2 = Training.builder()
+        athleteDao.save(athlete);
+
+        trainingType = TrainingType.builder()
+                .id(1L)
+                .typeName("LEGS")
+                .build();
+        trainingTypeDao.save(trainingType);
+
+        training1 = Training.builder()
+                .id(1L)
                 .setsAmount(3)
                 .date(LocalDate.now())
-                .typeId(4L)
-                .athleteId(4L)
+                .typeId(trainingType.getId())
+                .athleteId(athlete.getId())
                 .build();
         trainingDao.save(training1);
+
+        training2 = Training.builder()
+                .id(2L)
+                .setsAmount(8)
+                .date(LocalDate.parse("2022-11-11"))
+                .typeId(trainingType.getId())
+                .athleteId(athlete.getId())
+                .build();
         trainingDao.save(training2);
 
-        List<Training> auditList = trainingDao.findAllByAthleteId(4L);
-        assertFalse(auditList.isEmpty());
+        training3 = Training.builder()
+                .id(3L)
+                .setsAmount(5)
+                .date(LocalDate.parse("2020-11-11"))
+                .typeId(trainingType.getId())
+                .athleteId(athlete.getId())
+                .build();
+        trainingDao.save(training3);
     }
 
+    @DisplayName("findAllByAthleteId method verification test")
+    @Test
+    void findAllByAthleteId() {
+        List<Training> trainingList = trainingDao.findAllByAthleteId(training1.getAthleteId());
+        assertFalse(trainingList.isEmpty());
+        assertEquals(3, trainingList.size());
+    }
+
+    @DisplayName("findById method verification test")
     @Test
     void findById() {
-        Training training = Training.builder()
-                .setsAmount(3)
-                .date(LocalDate.now())
-                .typeId(2L)
-                .athleteId(2L)
-                .build();
-        trainingDao.save(training);
-
-        Optional<Training> foundTraining = trainingDao.findById(2L);
+        Optional<Training> foundTraining = trainingDao.findById(training2.getId());
         assertTrue(foundTraining.isPresent());
-        assertEquals(3, foundTraining.get().getSetsAmount());
+        assertEquals(8, foundTraining.get().getSetsAmount());
 
         Optional<Training> notFoundTraining = trainingDao.findById(999L);
         assertFalse(notFoundTraining.isPresent());
     }
 
+    @DisplayName("findByAthleteIdAndTrainingDate method verification test")
     @Test
     void findByAthleteIdAndTrainingDate() {
-        Long athleteId = 5L;
-        LocalDate date = LocalDate.now();
-        Training expectedTraining = Training.builder()
-                .setsAmount(3)
-                .date(date)
-                .typeId(1L)
-                .athleteId(athleteId)
-                .build();
-        trainingDao.save(expectedTraining);
+        Optional<Training> foundTraining = trainingDao.findByAthleteIdAndTrainingDate(training2.getAthleteId(), LocalDate.parse("2022-11-11"));
+        assertTrue(foundTraining.isPresent());
+        assertEquals(8, foundTraining.get().getSetsAmount());
 
-        Optional<Training> result = trainingDao.findByAthleteIdAndTrainingDate(athleteId, date);
-
-        assertTrue(result.isPresent());
-        assertEquals(expectedTraining, result.get());
+        Optional<Training> notFoundTraining = trainingDao.findByAthleteIdAndTrainingDate(999L, LocalDate.parse("2022-11-11"));
+        assertFalse(notFoundTraining.isPresent());
     }
 
+    @DisplayName("delete method verification test")
     @Test
     void delete() {
-        Training training = Training.builder()
-                .setsAmount(3)
-                .date(LocalDate.now())
-                .typeId(1L)
-                .athleteId(1L)
-                .build();
-        Training savedTraining = trainingDao.save(training);
+        Optional<Training> training = trainingDao.findById(training3.getId());
+        assertTrue(training.isPresent());
 
-        Optional<Training> training1 = trainingDao.findById(savedTraining.getId());
-        assertTrue(training1.isPresent());
-
-        trainingDao.delete(training.getId());
-        Optional<Training> deletedAudit = trainingDao.findById(training.getId());
+        trainingDao.delete(training3.getId());
+        Optional<Training> deletedAudit = trainingDao.findById(training3.getId());
         assertFalse(deletedAudit.isPresent());
     }
 
+    @DisplayName("update method verification test")
     @Test
     void update() {
-        Training originalTraining = Training.builder()
-                .setsAmount(3)
-                .date(LocalDate.now())
-                .typeId(1L)
-                .athleteId(1L)
-                .build();
-        trainingDao.save(originalTraining);
+        training1.setSetsAmount(5);
 
-        originalTraining.setSetsAmount(5);
+        trainingDao.update(training1);
 
-        trainingDao.update(originalTraining);
-
-        Optional<Training> updatedTrainingOptional = trainingDao.findById(originalTraining.getId());
+        Optional<Training> updatedTrainingOptional = trainingDao.findById(training1.getId());
         assertTrue(updatedTrainingOptional.isPresent());
 
         Training updatedTraining = updatedTrainingOptional.get();
         assertEquals(3, updatedTraining.getSetsAmount());
-        assertEquals(originalTraining.getDate(), updatedTraining.getDate());
-        assertEquals(originalTraining.getTypeId(), updatedTraining.getTypeId());
-        assertEquals(originalTraining.getAthleteId(), updatedTraining.getAthleteId());
+        assertEquals(training1.getDate(), updatedTraining.getDate());
+        assertEquals(training1.getTypeId(), updatedTraining.getTypeId());
+        assertEquals(training1.getAthleteId(), updatedTraining.getAthleteId());
     }
 
+    @DisplayName("save method verification test")
     @Test
     void save() {
-        Training trainingToSave = Training.builder()
-                .setsAmount(3)
-                .date(LocalDate.now())
-                .typeId(1L)
-                .athleteId(1L)
-                .build();
-
-        Training savedTraining = trainingDao.save(trainingToSave);
+        Training savedTraining = trainingDao.save(training1);
         assertNotNull(savedTraining.getId());
-        assertEquals(trainingToSave.getSetsAmount(), savedTraining.getSetsAmount());
-        assertEquals(trainingToSave.getDate(), savedTraining.getDate());
-        assertEquals(trainingToSave.getTypeId(), savedTraining.getTypeId());
-        assertEquals(trainingToSave.getAthleteId(), savedTraining.getAthleteId());
+        assertEquals(training1.getSetsAmount(), savedTraining.getSetsAmount());
+        assertEquals(training1.getDate(), savedTraining.getDate());
+        assertEquals(training1.getTypeId(), savedTraining.getTypeId());
+        assertEquals(training1.getAthleteId(), savedTraining.getAthleteId());
     }
 }
