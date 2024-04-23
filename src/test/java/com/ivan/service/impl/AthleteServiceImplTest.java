@@ -5,6 +5,7 @@ import com.ivan.exception.AthleteNotFoundException;
 import com.ivan.model.Athlete;
 import com.ivan.model.Role;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+@DisplayName("AthleteServiceImpl implementation test")
 @ExtendWith(MockitoExtension.class)
 class AthleteServiceImplTest {
 
@@ -48,6 +50,7 @@ class AthleteServiceImplTest {
                 .build();
     }
 
+    @DisplayName("Test showAllAthletes method")
     @Test
     void showAllAthlete_Success() {
         List<Athlete> athletes = Arrays.asList(athlete1, athlete2);
@@ -59,6 +62,7 @@ class AthleteServiceImplTest {
         assertThat(result).containsExactlyInAnyOrder(athlete1, athlete2);
     }
 
+    @DisplayName("Test getAthleteById method")
     @Test
     void getAthleteById_Success() {
         when(athleteDao.findById(athlete1.getId())).thenReturn(Optional.of(athlete1));
@@ -68,6 +72,7 @@ class AthleteServiceImplTest {
         assertThat(result).isEqualTo(athlete1);
     }
 
+    @DisplayName("Test getAthleteById method with exception")
     @Test
     void getAthleteById_ThrowsAthleteNotFoundException() {
         Long nonExistingId = 100L;

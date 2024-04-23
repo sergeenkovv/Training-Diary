@@ -117,9 +117,9 @@ public class ApplicationRunner {
             } else if (input.equals("4")) {
                 HandlerClient.handlerGetPreviousTrainingsSortedByDate(outputData);
             } else if (input.equals("5")) {
-                HandlerClient.HandlerGetTrainingsBySetsAmount(outputData);
+                HandlerClient.handlerGetTrainingsBySetsAmount(outputData);
             } else if (input.equals("6")) {
-                HandlerClient.HandlerDoDeleteTraining(inputData, outputData);
+                HandlerClient.handlerDoDeleteTraining(inputData, outputData);
             } else if (input.equals("7")) {
                 ApplicationContext.cleanAuthorizeAthlete();
                 currentStage = ProcessStage.SECURITY;
@@ -152,19 +152,19 @@ public class ApplicationRunner {
             outputData.output(menu);
             String input = inputData.input().toString();
             if (input.equals("1")) {
-                HandlerTrainer.HandlerShowAllClients(outputData);
+                HandlerTrainer.handlerShowAllClients(outputData);
             } else if (input.equals("2")) {
                 HandlerTrainer.showAvailableTrainingsTypes(outputData);
             } else if (input.equals("3")) {
-                HandlerTrainer.HandlerAddNewTypeOfTraining(inputData, outputData);
+                HandlerTrainer.handlerAddNewTypeOfTraining(inputData, outputData);
             } else if (input.equals("4")) {
-                HandlerTrainer.HandlerDoDeleteTrainingType(inputData, outputData);
+                HandlerTrainer.handlerDoDeleteTrainingType(inputData, outputData);
             } else if (input.equals("5")) {
-                HandlerTrainer.HandlerGetClientsPreviousTrainingsSortedByDate(inputData, outputData);
+                HandlerTrainer.handlerGetClientsPreviousTrainingsSortedByDate(inputData, outputData);
             } else if (input.equals("6")) {
-                HandlerTrainer.HandlerGetClientsPreviousTrainingsSortedBySetsAmount(inputData, outputData);
+                HandlerTrainer.handlerGetClientsPreviousTrainingsSortedBySetsAmount(inputData, outputData);
             } else if (input.equals("7")) {
-                HandlerTrainer.HandlerGetAthleteAudits(inputData, outputData);
+                HandlerTrainer.handlerGetAthleteAudits(inputData, outputData);
             } else if (input.equals("8")) {
                 ApplicationContext.cleanAuthorizeAthlete();
                 currentStage = ProcessStage.SECURITY;
@@ -245,7 +245,7 @@ public class ApplicationRunner {
 
     private static class HandlerTrainer {
 
-        public static void HandlerShowAllClients(OutputData outputData) {
+        public static void handlerShowAllClients(OutputData outputData) {
             final String msgCl = "List of all clients:";
             outputData.output(msgCl);
 
@@ -266,7 +266,8 @@ public class ApplicationRunner {
             }
         }
 
-        public static void HandlerAddNewTypeOfTraining(InputData inputData, OutputData outputData) {
+        public static void handlerAddNewTypeOfTraining(InputData inputData, OutputData outputData) {
+            showAvailableTrainingsTypes(outputData);
             final String trainingTypeMsg = "Enter training type:";
             outputData.output(trainingTypeMsg);
             String trainingType = inputData.input().toString();
@@ -281,15 +282,17 @@ public class ApplicationRunner {
             HandlerClient.showAvailableTrainingsTypes(outputData);
         }
 
-        public static void HandlerDoDeleteTrainingType(InputData inputData, OutputData outputData) {
-            final String trainingTypeMsg = "Enter the type of training you want to delete:";
+        public static void handlerDoDeleteTrainingType(InputData inputData, OutputData outputData) {
+            showAvailableTrainingsTypes(outputData);
+            final String trainingTypeMsg = "Enter the type`s id of training you want to delete:";
             outputData.output(trainingTypeMsg);
             String trainingType = inputData.input().toString();
 
-            athleteController.deleteTrainingType(trainingType);
+            athleteController.deleteTrainingType(Long.valueOf(trainingType));
         }
 
-        public static void HandlerGetClientsPreviousTrainingsSortedByDate(InputData inputData, OutputData outputData) {
+        public static void handlerGetClientsPreviousTrainingsSortedByDate(InputData inputData, OutputData outputData) {
+            handlerShowAllClients(outputData);
             final String athleteMsg = "Enter the athlete id whose workouts you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
@@ -302,7 +305,8 @@ public class ApplicationRunner {
             }
         }
 
-        public static void HandlerGetClientsPreviousTrainingsSortedBySetsAmount(InputData inputData, OutputData outputData) {
+        public static void handlerGetClientsPreviousTrainingsSortedBySetsAmount(InputData inputData, OutputData outputData) {
+            handlerShowAllClients(outputData);
             final String athleteMsg = "Enter the athlete id whose workouts you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
@@ -315,7 +319,8 @@ public class ApplicationRunner {
             }
         }
 
-        public static void HandlerGetAthleteAudits(InputData inputData, OutputData outputData) {
+        public static void handlerGetAthleteAudits(InputData inputData, OutputData outputData) {
+            handlerShowAllClients(outputData);
             final String athleteMsg = "Enter the athlete name whose audits you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
@@ -338,9 +343,7 @@ public class ApplicationRunner {
         }
 
         public static void handlerAddTraining(InputData inputData, OutputData outputData) {
-            List<TrainingType> allTypes = athleteController.showAvailableTrainingTypes();
-            outputData.output(allTypes);
-
+            showAvailableTrainingsTypes(outputData);
             final String trainingTypeMsg = "select training type";
             outputData.output(trainingTypeMsg);
             String trainingType = inputData.input().toString();
@@ -353,6 +356,7 @@ public class ApplicationRunner {
         }
 
         public static void handlerEditTraining(InputData inputData, OutputData outputData) {
+            handlerGetPreviousTrainingsSortedByDate(outputData);
             final String dateMsg = "Enter the date of study you want to change in the format yyyy-MM-dd";
             outputData.output(dateMsg);
             String date = inputData.input().toString();
@@ -377,7 +381,7 @@ public class ApplicationRunner {
             }
         }
 
-        public static void HandlerGetTrainingsBySetsAmount(OutputData outputData) {
+        public static void handlerGetTrainingsBySetsAmount(OutputData outputData) {
             List<Training> trainingList = athleteController.showHistoryTrainingsBySetsAmount(ApplicationContext.getAuthorizeAthlete().getId());
             if (trainingList == null || trainingList.isEmpty()) {
                 outputData.output("You have not a training history.\n");
@@ -386,7 +390,8 @@ public class ApplicationRunner {
             }
         }
 
-        public static void HandlerDoDeleteTraining(InputData inputData, OutputData outputData) {
+        public static void handlerDoDeleteTraining(InputData inputData, OutputData outputData) {
+            handlerGetPreviousTrainingsSortedByDate(outputData);
             final String dateMsg = "Enter the training date you want to delete in the format yyyy-MM-dd:";
             outputData.output(dateMsg);
             String date = inputData.input().toString();

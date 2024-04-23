@@ -46,17 +46,18 @@ public class TrainingServiceImpl implements TrainingService {
      * @param setsAmount   the number of sets for the training
      */
     @Override
-    public void addTraining(Long athleteId, String trainingType, Integer setsAmount) {
+    public void addTraining(Long athleteId, Long trainingType, Integer setsAmount) {
         Optional<Training> maybeTraining = trainingDao.findByAthleteIdAndTrainingDate(athleteId, LocalDate.now());
+        TrainingType byTypeId = trainingTypeService.getByTypeId(trainingType);
 
         if (maybeTraining.isPresent()) {
             throw new TrainingLimitExceededException("You cannot do one type of training more than once a day!");
         }
 
         Training training = Training.builder()
-                .trainingType(trainingTypeService.getByTypeName(trainingType))
                 .setsAmount(setsAmount)
                 .date(LocalDate.now())
+                .typeId(byTypeId.getId())
                 .athleteId(athleteId)
                 .build();
 
@@ -76,12 +77,14 @@ public class TrainingServiceImpl implements TrainingService {
      * @param setsAmount   the new number of sets
      */
     @Override
-    public void editTraining(Long athleteId, LocalDate date, String trainingType, String setsAmount) {
-        TrainingType byTypeName = trainingTypeService.getByTypeName(trainingType);
+    public void editTraining(Long athleteId, LocalDate date, Long trainingType, String setsAmount) {
         Training existingTraining = getTrainingByAthleteIdAndDate(athleteId, date);
+        TrainingType byTypeId = trainingTypeService.getByTypeId(trainingType);
 
-        existingTraining.setTrainingType(byTypeName);
+        existingTraining.setTypeId(byTypeId.getId());
         existingTraining.setSetsAmount(Integer.parseInt(setsAmount));
+
+        trainingDao.update(existingTraining);
 
         Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(
@@ -132,7 +135,8 @@ public class TrainingServiceImpl implements TrainingService {
      */
     @Override
     public void deleteTraining(Long athleteId, LocalDate date) {
-        trainingDao.delete(getTrainingByAthleteIdAndDate(athleteId, date));
+        Training training = getTrainingByAthleteIdAndDate(athleteId, date);
+        trainingDao.delete(training.getId());
 
         Athlete athlete = athleteService.getAthleteByAthleteId(athleteId);
         auditService.audit(

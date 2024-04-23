@@ -3,6 +3,7 @@ package com.ivan.service.impl;
 import com.ivan.dao.AuditDao;
 import com.ivan.model.ActionType;
 import com.ivan.model.Audit;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@DisplayName("auditServiceImpl implementation test")
 @ExtendWith(MockitoExtension.class)
 class AuditServiceImplTest {
 
@@ -25,20 +27,21 @@ class AuditServiceImplTest {
     @Mock
     private AuditDao auditDao;
 
+    @DisplayName("Test getAllAuditsByAthleteLogin method")
     @Test
     void getAllAuditsByAthleteLogin_Success() {
         String login = "Ivan";
 
         Audit audit1 = Audit.builder()
                 .id(1L)
-                .AthleteLogin(login)
+                .athleteLogin(login)
                 .actionType(ActionType.ADD_TRAINING)
                 .date(LocalDate.now())
                 .build();
 
         Audit audit2 = Audit.builder()
                 .id(2L)
-                .AthleteLogin(login)
+                .athleteLogin(login)
                 .actionType(ActionType.REGISTRATION)
                 .date(LocalDate.now())
                 .build();
@@ -52,6 +55,7 @@ class AuditServiceImplTest {
         assertThat(result).isEqualTo(expectedAudits);
     }
 
+    @DisplayName("Test audit method")
     @Test
     void audit_Success() {
         String login = "Ivan";

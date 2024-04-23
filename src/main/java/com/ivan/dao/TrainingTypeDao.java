@@ -18,18 +18,13 @@ public interface TrainingTypeDao extends GeneralDao<Long, TrainingType> {
      */
     List<TrainingType> findAll();
 
-    /**
-     * Retrieves a training type by its name.
-     *
-     * @param typeName The name of the training type to find.
-     * @return An {@link Optional} containing the training type if found, otherwise an empty {@link Optional}.
-     */
-    Optional<TrainingType> findByTypeName(String typeName);
+
+    Optional<TrainingType> findById(Long id);
 
     /**
      * Deletes a training type from the data source.
      *
-     * @param trainingToDelete The training type to delete.
+     * @param id The training type to delete.
      */
-    void delete(TrainingType trainingToDelete);
+    boolean delete(Long id);
 }

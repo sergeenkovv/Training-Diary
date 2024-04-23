@@ -6,15 +6,18 @@ import com.ivan.dao.AthleteDao;
 import com.ivan.dao.AuditDao;
 import com.ivan.dao.TrainingDao;
 import com.ivan.dao.TrainingTypeDao;
-import com.ivan.dao.impl.MemoryAthleteDaoImpl;
-import com.ivan.dao.impl.MemoryAuditDaoImpl;
-import com.ivan.dao.impl.MemoryTrainingDaoImpl;
-import com.ivan.dao.impl.MemoryTrainingTypeDaoImpl;
+import com.ivan.dao.impl.AthleteDaoImpl;
+import com.ivan.dao.impl.AuditDaoImpl;
+import com.ivan.dao.impl.TrainingDaoImpl;
+import com.ivan.dao.impl.TrainingTypeDaoImpl;
 import com.ivan.in.ConsoleInputData;
 import com.ivan.in.ConsoleOutputData;
+import com.ivan.liquibase.LiquibaseMigration;
 import com.ivan.model.Athlete;
 import com.ivan.service.*;
 import com.ivan.service.impl.*;
+import com.ivan.util.ConnectionManager;
+import com.ivan.util.PropertiesUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +30,39 @@ public class ApplicationContext {
 
     private static final Map<String, Object> CONTEXT = new HashMap<>();
 
+    private static final String URL_KEY = "db.url";
+    private static final String USERNAME_KEY = "db.username";
+    private static final String PASSWORD_KEY = "db.password";
+
     /**
      * Loads the application context with required beans.
      * This includes loading DAOs, services, controllers, and input/output components.
      */
     public static void loadContext() {
+        loadProperties();
         loadDaoLayer();
         loadServiceLayer();
         loadControllers();
         loadInputOutputLayer();
+    }
+
+    /**
+     * Loads the properties required for configuring the application context.
+     * It initializes the database connection manager and runs database migrations using Liquibase.
+     * The database connection properties are retrieved from the application configuration.
+     * After loading properties, it stores the connection manager in the application context.
+     */
+    private static void loadProperties() {
+        ConnectionManager connectionManager = new ConnectionManager(
+                PropertiesUtil.get(URL_KEY),
+                PropertiesUtil.get(USERNAME_KEY),
+                PropertiesUtil.get(PASSWORD_KEY)
+        );
+
+        LiquibaseMigration liquibaseMigration = LiquibaseMigration.getInstance();
+        liquibaseMigration.runMigrations(connectionManager.getConnection());
+
+        CONTEXT.put("connectionManager", connectionManager);
     }
 
     /**
@@ -78,10 +105,18 @@ public class ApplicationContext {
      * This includes instantiating and storing DAO objects for athlete, training, training type, and audit.
      */
     private static void loadDaoLayer() {
-        CONTEXT.put("athleteDao", new MemoryAthleteDaoImpl());
-        CONTEXT.put("trainingDao", new MemoryTrainingDaoImpl());
-        CONTEXT.put("trainingTypeDao", new MemoryTrainingTypeDaoImpl());
-        CONTEXT.put("auditDao", new MemoryAuditDaoImpl());
+        CONTEXT.put("athleteDao", new AthleteDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager")
+        ));
+        CONTEXT.put("trainingDao", new TrainingDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager")
+        ));
+        CONTEXT.put("trainingTypeDao", new TrainingTypeDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager")
+        ));
+        CONTEXT.put("auditDao", new AuditDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager")
+        ));
     }
 
     /**

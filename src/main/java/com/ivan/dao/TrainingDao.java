@@ -20,19 +20,16 @@ public interface TrainingDao extends GeneralDao<Long, Training> {
      */
     List<Training> findAllByAthleteId(Long athleteId);
 
-    /**
-     * Finds a training by athlete ID and training date.
-     *
-     * @param athleteId The ID of the athlete.
-     * @param date      The date of the training.
-     * @return An {@link Optional} containing the training if found, otherwise an empty {@link Optional}.
-     */
-    Optional<Training> findByAthleteIdAndTrainingDate(Long athleteId, LocalDate date);
+    Optional<Training> findById(Long id);
 
     /**
      * Deletes a training from the data source.
      *
-     * @param training The training to delete.
+     * @param id The training`s id to delete.
      */
-    void delete(Training training);
+    boolean delete(Long id);
+
+    void update(Training training);
+
+    Optional<Training> findByAthleteIdAndTrainingDate(Long athleteId, LocalDate date);
 }

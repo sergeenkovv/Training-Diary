@@ -14,7 +14,7 @@ import java.util.Optional;
 /**
  * Implementation of the {@link SecurityService} interface providing
  * functionality for athlete registration and authorization.
- *
+ * <p>
  * Requires an {@link AthleteDao} and an {@link AuditService} to be
  * injected for data access and auditing purposes respectively.
  */

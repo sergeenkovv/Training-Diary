@@ -4,6 +4,7 @@ import com.ivan.dao.TrainingTypeDao;
 import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.model.TrainingType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@DisplayName("trainingTypeServiceImpl implementation test")
 @ExtendWith(MockitoExtension.class)
 class TrainingTypeServiceImplTest {
 
@@ -47,6 +49,7 @@ class TrainingTypeServiceImplTest {
         mockTrainingTypes = Arrays.asList(trainingType1, trainingType2);
     }
 
+    @DisplayName("Test getAllTrainingTypes method")
     @Test
     void getAvailableTrainingTypes_Success() {
         when(trainingTypeDao.findAll()).thenReturn(mockTrainingTypes);
@@ -56,6 +59,7 @@ class TrainingTypeServiceImplTest {
         assertThat(result).isEqualTo(mockTrainingTypes);
     }
 
+    @DisplayName("Test addTrainingType method")
     @Test
     void addTrainingType_Success() {
         TrainingType newTrainingType = TrainingType.builder()
@@ -68,45 +72,50 @@ class TrainingTypeServiceImplTest {
         verify(trainingTypeDao).save(newTrainingType);
     }
 
+    @DisplayName("Test deleteTrainingType method")
     @Test
     void delete_Success() {
-        when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.of(trainingType1));
+        when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.of(trainingType1));
 
-        trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName());
+        trainingTypeServiceImpl.deleteTrainingType(trainingType1.getId());
 
-        verify(trainingTypeDao, times(1)).delete(trainingType1);
+        verify(trainingTypeDao, times(1)).delete(trainingType1.getId());
     }
 
+    @DisplayName("Test deleteTrainingType method with exception")
     @Test
     void delete_InvalidTrainingTypeException() {
-        when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.empty());
+        when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName()))
+        assertThatThrownBy(() -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getId()))
                 .isInstanceOf(InvalidTrainingTypeException.class)
                 .hasMessage("Such type of training does not exist!");
     }
 
+    @DisplayName("Test getByTypeId method")
     @Test
     void getByTypeName_Success() {
         String typeName = "CHEST";
+        Long typeId = 3L;
         TrainingType expectedTrainingType = TrainingType.builder()
-                .id(3L)
+                .id(typeId)
                 .typeName(typeName)
                 .build();
 
-        when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.of(expectedTrainingType));
+        when(trainingTypeDao.findById(typeId)).thenReturn(Optional.of(expectedTrainingType));
 
-        TrainingType result = trainingTypeServiceImpl.getByTypeName(typeName);
+        TrainingType result = trainingTypeServiceImpl.getByTypeId(typeId);
 
         assertThat(result).isEqualTo(expectedTrainingType);
     }
 
+    @DisplayName("Test getByTypeId method with exception")
     @Test
     void getByTypeName_InvalidTrainingTypeException() {
-        String typeName = "NonExistentType";
-        when(trainingTypeDao.findByTypeName(typeName)).thenReturn(Optional.empty());
+        Long typeName = null;
+        when(trainingTypeDao.findById(typeName)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeName(typeName))
+        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeId(typeName))
                 .isInstanceOf(InvalidTrainingTypeException.class)
                 .hasMessage("Such type of training does not exist!");
     }

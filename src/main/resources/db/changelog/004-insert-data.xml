@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="004" author="ivan">
+        <insert tableName="athletes" schemaName="develop">
+            <column name="id" value="-1"/>
+            <column name="login" value="trainer"/>
+            <column name="password" value="trainer"/>
+            <column name="role" value="TRAINER"/>
+        </insert>
+
+        <insert tableName="training_types" schemaName="develop">
+            <column name="type_name" value="CHEST"/>
+        </insert>
+        <insert tableName="training_types" schemaName="develop">
+            <column name="type_name" value="BACK"/>
+        </insert>
+        <insert tableName="training_types" schemaName="develop">
+            <column name="type_name" value="SHOULDERS"/>
+        </insert>
+        <insert tableName="training_types" schemaName="develop">
+            <column name="type_name" value="LEGS"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

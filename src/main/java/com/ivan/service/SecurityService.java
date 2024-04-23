@@ -10,7 +10,7 @@ public interface SecurityService {
     /**
      * Registers a new athlete with the provided login and password.
      *
-     * @param login The login for the new athlete.
+     * @param login    The login for the new athlete.
      * @param password The password for the new athlete.
      */
     Athlete registration(String login, String password);
@@ -18,7 +18,7 @@ public interface SecurityService {
     /**
      * Authorizes an athlete with the provided login and password.
      *
-     * @param login The login of the athlete.
+     * @param login    The login of the athlete.
      * @param password The password of the athlete.
      */
     Athlete authorization(String login, String password);

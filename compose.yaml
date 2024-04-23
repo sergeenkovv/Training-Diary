@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:16.1
+    container_name: training_diary_container
+    environment:
+      POSTGRES_USER: ivan
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: training_diary_db
+    ports:
+      - "5437:5432"

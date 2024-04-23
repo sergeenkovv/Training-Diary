@@ -24,14 +24,14 @@ public interface TrainingTypeService {
     /**
      * Deletes a training type by its name.
      *
-     * @param trainingTypeName The name of the training type to be deleted.
+     * @param id The name of the training type to be deleted.
      */
-    void deleteTrainingType(String trainingTypeName);
+    void deleteTrainingType(Long id);
 
     /**
      * Retrieves a training type by its name.
      *
      * @param typeName The name of the training type.
      */
-    TrainingType getByTypeName(String typeName);
+    TrainingType getByTypeId(Long typeId);
 }

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Controller class responsible for handling security-related operations such as user registration and authorization.
+ * Controller class responsible for handling security-related operations such as athlete registration and authorization.
  * Uses the {@link SecurityService} for performing registration and authorization tasks.
  */
 @Slf4j
