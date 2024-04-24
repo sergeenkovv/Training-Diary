@@ -1,5 +1,10 @@
 package com.ivan.in;
 
+/**
+ * The interface Output data.
+ *
+ * @author sergeenkovv
+ */
 public interface OutputData {
 
     /**

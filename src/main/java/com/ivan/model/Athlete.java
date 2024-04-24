@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
  * Represents the Athlete entity.
  * This class is annotated with Lombok annotations such as {@link Data}, {@link NoArgsConstructor},
  * {@link AllArgsConstructor}, and {@link Builder}.
+ *
+ * @author sergeenkovv
  */
 @Data
 @NoArgsConstructor

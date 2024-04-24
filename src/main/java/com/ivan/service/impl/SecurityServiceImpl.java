@@ -17,6 +17,8 @@ import java.util.Optional;
  * <p>
  * Requires an {@link AthleteDao} and an {@link AuditService} to be
  * injected for data access and auditing purposes respectively.
+ *
+ * @author sergeenkovv
  */
 @RequiredArgsConstructor
 public class SecurityServiceImpl implements SecurityService {

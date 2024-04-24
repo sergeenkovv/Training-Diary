@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown to indicate a registration error.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class RegistrationException extends RuntimeException {
 

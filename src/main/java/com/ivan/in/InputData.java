@@ -2,6 +2,8 @@ package com.ivan.in;
 
 /**
  * The interface Input data.
+ *
+ * @author sergeenkovv
  */
 public interface InputData {
 

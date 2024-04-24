@@ -4,6 +4,8 @@ import com.ivan.model.Athlete;
 
 /**
  * This interface provides methods for athlete registration and authorization.
+ *
+ * @author sergeenkovv
  */
 public interface SecurityService {
 

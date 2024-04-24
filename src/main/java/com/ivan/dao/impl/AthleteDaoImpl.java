@@ -11,11 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DAO implementation for {@link AthleteDao} interface.
+ *
+ * @author sergeenkovv
+ */
 @RequiredArgsConstructor
 public class AthleteDaoImpl implements AthleteDao {
 
     private final ConnectionManager connectionProvider;
 
+    /**
+     * Searches for an athlete by login.
+     *
+     * @param login the athlete's login
+     * @return an optional athlete with the given login if found, or empty optional otherwise
+     */
     @Override
     public Optional<Athlete> findByLogin(String login) {
         String sqlFindByLogin = """
@@ -34,6 +45,12 @@ public class AthleteDaoImpl implements AthleteDao {
         }
     }
 
+    /**
+     * Searches for an athlete by id.
+     *
+     * @param id the athlete's id
+     * @return an optional athlete with the given id if found, or empty optional otherwise
+     */
     @Override
     public Optional<Athlete> findById(Long id) {
         String sqlFindById = """
@@ -52,6 +69,11 @@ public class AthleteDaoImpl implements AthleteDao {
         }
     }
 
+    /**
+     * Retrieves all athletes from the database.
+     *
+     * @return a list of all athletes
+     */
     @Override
     public List<Athlete> findAll() {
         String sqlFindAll = """
@@ -72,6 +94,12 @@ public class AthleteDaoImpl implements AthleteDao {
         }
     }
 
+    /**
+     * Saves an athlete to the database.
+     *
+     * @param athlete the athlete to save
+     * @return the saved athlete with the generated id
+     */
     @Override
     public Athlete save(Athlete athlete) {
         String sqlSave = """
@@ -95,6 +123,13 @@ public class AthleteDaoImpl implements AthleteDao {
         }
     }
 
+    /**
+     * Builds an {@link Athlete} instance from a {@link ResultSet}.
+     *
+     * @param resultSet the result set to build the athlete from
+     * @return the built athlete instance
+     * @throws SQLException if there is an error reading from the result set
+     */
     private Athlete buildAthlete(ResultSet resultSet) throws SQLException {
         return Athlete.builder()
                 .id(resultSet.getLong("id"))

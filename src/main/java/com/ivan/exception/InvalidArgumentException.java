@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown when an invalid argument is passed to a method or constructor.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class InvalidArgumentException extends RuntimeException {
 

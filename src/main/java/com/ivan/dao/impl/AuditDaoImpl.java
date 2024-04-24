@@ -10,19 +10,30 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO implementation for {@link AuditDao} interface.
+ *
+ * @author sergeenkovv
+ */
 @RequiredArgsConstructor
 public class AuditDaoImpl implements AuditDao {
 
     private final ConnectionManager connectionProvider;
 
+    /**
+     * Retrieves all audits for a given athlete login.
+     *
+     * @param athleteLogin the athlete's login
+     * @return a list of audits for the given athlete login
+     */
     @Override
-    public List<Audit> findAllByLogin(String login) {
+    public List<Audit> findAllByLogin(String athleteLogin) {
         String sqlFindAllByAthleteLogin = """
                 SELECT * FROM develop.audit WHERE athlete_login = ?
                 """;
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlFindAllByAthleteLogin)) {
-            preparedStatement.setString(1, login);
+            preparedStatement.setString(1, athleteLogin);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Audit> result = new ArrayList<>();
             while (resultSet.next()) {
@@ -34,6 +45,12 @@ public class AuditDaoImpl implements AuditDao {
         }
     }
 
+    /**
+     * Saves an audit to the database.
+     *
+     * @param audit the audit to save
+     * @return the saved audit with the generated id
+     */
     @Override
     public Audit save(Audit audit) {
         String sqlSave = """
@@ -57,6 +74,13 @@ public class AuditDaoImpl implements AuditDao {
         }
     }
 
+    /**
+     * Builds an {@link Audit} instance from a {@link ResultSet}.
+     *
+     * @param resultSet the result set to build the audit from
+     * @return the built audit instance
+     * @throws SQLException if there is an error reading from the result set
+     */
     private Audit buildAudit(ResultSet resultSet) throws SQLException {
         return Audit.builder()
                 .id(resultSet.getLong("id"))

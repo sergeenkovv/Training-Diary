@@ -5,6 +5,7 @@ package com.ivan.dao;
  *
  * @param <K> The type of the key used to identify entities.
  * @param <E> The type of the entity managed by the DAO.
+ * @author sergeenkovv
  */
 public interface GeneralDao<K, E> {
 
