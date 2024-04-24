@@ -6,6 +6,8 @@ import java.util.List;
 
 /**
  * Interface for managing training types.
+ *
+ * @author sergeenkovv
  */
 public interface TrainingTypeService {
 
@@ -22,16 +24,23 @@ public interface TrainingTypeService {
     void addTrainingType(TrainingType trainingType);
 
     /**
-     * Deletes a training type by its name.
+     * Deletes a training type by it's name.
      *
-     * @param id The name of the training type to be deleted.
+     * @param typeName The name of the training type to be deleted.
      */
-    void deleteTrainingType(Long id);
+    void deleteTrainingType(String typeName);
 
     /**
-     * Retrieves a training type by its name.
+     * Retrieves a training type by it's id.
      *
-     * @param typeName The name of the training type.
+     * @param id The id of the training type.
      */
-    TrainingType getByTypeId(Long typeId);
+    TrainingType getById(Long id);
+
+    /**
+     * Retrieves a training type by it's name.
+     *
+     * @param typeName The id of the training type.
+     */
+    TrainingType getByTypeName(String typeName);
 }

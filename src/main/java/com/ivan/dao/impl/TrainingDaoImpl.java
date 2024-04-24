@@ -1,6 +1,8 @@
 package com.ivan.dao.impl;
 
+import com.ivan.dao.AthleteDao;
 import com.ivan.dao.TrainingDao;
+import com.ivan.dao.TrainingTypeDao;
 import com.ivan.model.Training;
 import com.ivan.util.ConnectionManager;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DAO implementation for {@link TrainingDao} interface.
+ *
+ * @author sergeenkovv
+ */
 @RequiredArgsConstructor
 public class TrainingDaoImpl implements TrainingDao {
 
     private final ConnectionManager connectionProvider;
+    private final TrainingTypeDao trainingTypeDao;
+    private final AthleteDao athleteDao;
 
+    /**
+     * Retrieves all training sessions for a given athlete id.
+     *
+     * @param athleteId the athlete's id
+     * @return a list of training sessions for the given athlete id
+     */
     @Override
     public List<Training> findAllByAthleteId(Long athleteId) {
         String sqlFindAllByAthleteId = """
@@ -35,14 +50,20 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Searches for a training session by id.
+     *
+     * @param id the training session's id
+     * @return an optional training session with the given id if found, or empty optional otherwise
+     */
     @Override
-    public Optional<Training> findById(Long athleteId) {
+    public Optional<Training> findById(Long id) {
         String sqlFindById = """
                 SELECT * FROM develop.trainings WHERE id = ?
                 """;
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlFindById)) {
-            preparedStatement.setLong(1, athleteId);
+            preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             return resultSet.next() ?
@@ -53,6 +74,13 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Searches for a training session by athlete id and training date.
+     *
+     * @param athleteId the athlete's id
+     * @param date      the training date
+     * @return an optional training session with the given athlete id and training date if found, or empty optional otherwise
+     */
     @Override
     public Optional<Training> findByAthleteIdAndTrainingDate(Long athleteId, LocalDate date) {
         String sqlFindById = """
@@ -72,6 +100,12 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Deletes a training session by its id.
+     *
+     * @param id the training session's id
+     * @return {@code true} if the training session was deleted successfully, {@code false} otherwise
+     */
     @Override
     public boolean delete(Long id) {
         String sqlDelete = """
@@ -87,6 +121,11 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Updates a training session.
+     *
+     * @param training the training session to update
+     */
     @Override
     public void update(Training training) {
         String sqlUpdate = """
@@ -98,8 +137,8 @@ public class TrainingDaoImpl implements TrainingDao {
         try (Connection connection = connectionProvider.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sqlUpdate)) {
             preparedStatement.setInt(1, training.getSetsAmount());
-            preparedStatement.setLong(2, training.getTypeId());
-            preparedStatement.setLong(3, training.getAthleteId());
+            preparedStatement.setLong(2, training.getTrainingType().getId());
+            preparedStatement.setLong(3, training.getAthlete().getId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -107,6 +146,12 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Saves a training session to the database.
+     *
+     * @param training the training session to save
+     * @return the saved training session with the generated id
+     */
     @Override
     public Training save(Training training) {
         String sqlSave = """
@@ -116,8 +161,8 @@ public class TrainingDaoImpl implements TrainingDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlSave, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, training.getSetsAmount());
             preparedStatement.setDate(2, Date.valueOf(training.getDate()));
-            preparedStatement.setLong(3, training.getTypeId());
-            preparedStatement.setLong(4, training.getAthleteId());
+            preparedStatement.setLong(3, training.getTrainingType().getId());
+            preparedStatement.setLong(4, training.getAthlete().getId());
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();
@@ -130,13 +175,20 @@ public class TrainingDaoImpl implements TrainingDao {
         }
     }
 
+    /**
+     * Builds a {@link Training} instance from a {@link ResultSet}.
+     *
+     * @param resultSet the result set to build the training instance from
+     * @return the built training instance
+     * @throws SQLException if there is an error reading from the result set
+     */
     private Training buildTraining(ResultSet resultSet) throws SQLException {
         return Training.builder()
                 .id(resultSet.getLong("id"))
                 .setsAmount(resultSet.getInt("sets_amount"))
                 .date(resultSet.getDate("date").toLocalDate())
-                .typeId(resultSet.getLong("type_id"))
-                .athleteId(resultSet.getLong("athlete_id"))
+                .trainingType(trainingTypeDao.findById(resultSet.getLong("type_id")).orElse(null))
+                .athlete(athleteDao.findById(resultSet.getLong("athlete_id")).orElse(null))
                 .build();
     }
 }

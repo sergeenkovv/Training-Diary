@@ -142,7 +142,7 @@ public class ApplicationRunner {
                  4. Delete training type.
                  5. Get the athlete's trainings sorted by date.
                  6. Get the athlete's trainings sorted by sets amount.
-                 7. Get athlete audit.
+                 7. Get athlete's audit.
                  8. Log out of your account.
                  0. Quit the application.
                  ╚═════════════════════════════════════════════════╝
@@ -284,16 +284,16 @@ public class ApplicationRunner {
 
         public static void handlerDoDeleteTrainingType(InputData inputData, OutputData outputData) {
             showAvailableTrainingsTypes(outputData);
-            final String trainingTypeMsg = "Enter the type`s id of training you want to delete:";
+            final String trainingTypeMsg = "Enter the name of the training type you want to delete:";
             outputData.output(trainingTypeMsg);
             String trainingType = inputData.input().toString();
 
-            athleteController.deleteTrainingType(Long.valueOf(trainingType));
+            athleteController.deleteTrainingType(trainingType);
         }
 
         public static void handlerGetClientsPreviousTrainingsSortedByDate(InputData inputData, OutputData outputData) {
             handlerShowAllClients(outputData);
-            final String athleteMsg = "Enter the athlete id whose workouts you want to see";
+            final String athleteMsg = "Enter the athlete's login whose workouts you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
 
@@ -307,7 +307,7 @@ public class ApplicationRunner {
 
         public static void handlerGetClientsPreviousTrainingsSortedBySetsAmount(InputData inputData, OutputData outputData) {
             handlerShowAllClients(outputData);
-            final String athleteMsg = "Enter the athlete id whose workouts you want to see";
+            final String athleteMsg = "Enter the athlete's login whose workouts you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
 
@@ -321,7 +321,7 @@ public class ApplicationRunner {
 
         public static void handlerGetAthleteAudits(InputData inputData, OutputData outputData) {
             handlerShowAllClients(outputData);
-            final String athleteMsg = "Enter the athlete name whose audits you want to see";
+            final String athleteMsg = "Enter the athlete's login whose audits you want to see";
             outputData.output(athleteMsg);
             String athlete = inputData.input().toString();
 
@@ -344,7 +344,7 @@ public class ApplicationRunner {
 
         public static void handlerAddTraining(InputData inputData, OutputData outputData) {
             showAvailableTrainingsTypes(outputData);
-            final String trainingTypeMsg = "select training type";
+            final String trainingTypeMsg = "select the name of the training type";
             outputData.output(trainingTypeMsg);
             String trainingType = inputData.input().toString();
 
