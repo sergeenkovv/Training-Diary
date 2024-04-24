@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @DisplayName("trainingTypeDao implementation test")
 class TrainingTypeDaoImplTest extends PostgresTestContainer {
@@ -70,6 +71,17 @@ class TrainingTypeDaoImplTest extends PostgresTestContainer {
         assertEquals(trainingType1.getTypeName(), foundType.get().getTypeName());
 
         Optional<TrainingType> notFoundType = trainingTypeDao.findById(999L);
+        assertFalse(notFoundType.isPresent());
+    }
+
+    @DisplayName("findByTypeName method verification test")
+    @Test
+    void findByTypeName() {
+        Optional<TrainingType> foundType = trainingTypeDao.findByTypeName(trainingType1.getTypeName());
+        assertTrue(foundType.isPresent());
+        assertEquals(trainingType1.getTypeName(), foundType.get().getTypeName());
+
+        Optional<TrainingType> notFoundType = trainingTypeDao.findByTypeName(String.valueOf(Optional.empty()));
         assertFalse(notFoundType.isPresent());
     }
 

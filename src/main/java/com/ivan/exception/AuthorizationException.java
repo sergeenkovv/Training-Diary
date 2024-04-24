@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown to indicate that authorization has failed.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class AuthorizationException extends RuntimeException {
 

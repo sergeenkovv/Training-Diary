@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Implementation of the {@link AthleteService} interface for managing athletes.
+ *
+ * @author sergeenkovv
  */
 @RequiredArgsConstructor
 public class AthleteServiceImpl implements AthleteService {
@@ -34,7 +36,7 @@ public class AthleteServiceImpl implements AthleteService {
      * @throws AthleteNotFoundException if no athlete is found with the given ID.
      */
     @Override
-    public Athlete getAthleteByAthleteId(Long id) {
+    public Athlete getById(Long id) {
         return athleteDao.findById(id)
                 .orElseThrow(() -> new AthleteNotFoundException("No athlete found with ID: " + id));
     }

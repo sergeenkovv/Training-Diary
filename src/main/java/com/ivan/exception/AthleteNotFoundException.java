@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown when an athlete is not found.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class AthleteNotFoundException extends RuntimeException {
 

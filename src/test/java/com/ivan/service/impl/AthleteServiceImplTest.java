@@ -67,7 +67,7 @@ class AthleteServiceImplTest {
     void getAthleteById_Success() {
         when(athleteDao.findById(athlete1.getId())).thenReturn(Optional.of(athlete1));
 
-        Athlete result = athleteService.getAthleteByAthleteId(athlete1.getId());
+        Athlete result = athleteService.getById(athlete1.getId());
 
         assertThat(result).isEqualTo(athlete1);
     }
@@ -78,7 +78,7 @@ class AthleteServiceImplTest {
         Long nonExistingId = 100L;
         when(athleteDao.findById(nonExistingId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> athleteService.getAthleteByAthleteId(nonExistingId))
+        assertThatThrownBy(() -> athleteService.getById(nonExistingId))
                 .isInstanceOf(AthleteNotFoundException.class)
                 .hasMessage("No athlete found with ID: " + nonExistingId);
     }

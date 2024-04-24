@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Interface for managing athlete training data.
+ *
+ * @author sergeenkovv
  */
 public interface TrainingService {
 
@@ -14,20 +16,20 @@ public interface TrainingService {
      * Adds a new training for the specified athlete.
      *
      * @param athleteId    The ID of the athlete.
-     * @param trainingType The type of training.
+     * @param typeName The type of training.
      * @param setsAmount   The number of sets.
      */
-    void addTraining(Long athleteId, Long trainingType, Integer setsAmount);
+    void addTraining(Long athleteId, String typeName, Integer setsAmount);
 
     /**
      * Edits an existing training for the specified athlete.
      *
      * @param athleteId    The ID of the athlete.
      * @param date         The date of the training.
-     * @param trainingType The type of training.
+     * @param typeName The type of training.
      * @param setsAmount   The number of sets.
      */
-    void editTraining(Long athleteId, LocalDate date, Long trainingType, String setsAmount);
+    void editTraining(Long athleteId, LocalDate date, String typeName, Integer setsAmount);
 
     /**
      * Retrieves a list of trainings for the specified athlete sorted by date.

@@ -25,6 +25,8 @@ import java.util.Map;
 /**
  * A simple application context for managing beans and dependencies.
  * This class provides methods to load context, manage authentication, and retrieve beans.
+ *
+ * @author sergeenkovv
  */
 public class ApplicationContext {
 
@@ -105,18 +107,23 @@ public class ApplicationContext {
      * This includes instantiating and storing DAO objects for athlete, training, training type, and audit.
      */
     private static void loadDaoLayer() {
-        CONTEXT.put("athleteDao", new AthleteDaoImpl(
-                (ConnectionManager) CONTEXT.get("connectionManager")
-        ));
-        CONTEXT.put("trainingDao", new TrainingDaoImpl(
-                (ConnectionManager) CONTEXT.get("connectionManager")
-        ));
-        CONTEXT.put("trainingTypeDao", new TrainingTypeDaoImpl(
-                (ConnectionManager) CONTEXT.get("connectionManager")
-        ));
-        CONTEXT.put("auditDao", new AuditDaoImpl(
-                (ConnectionManager) CONTEXT.get("connectionManager")
-        ));
+        AthleteDao athleteDao = new AthleteDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager"));
+        CONTEXT.put("athleteDao", athleteDao);
+
+        TrainingTypeDaoImpl trainingTypeDao = new TrainingTypeDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager"));
+        CONTEXT.put("trainingTypeDao", trainingTypeDao);
+
+        AuditDaoImpl auditDao = new AuditDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager"));
+        CONTEXT.put("auditDao", auditDao);
+
+        TrainingDaoImpl trainingDao = new TrainingDaoImpl(
+                (ConnectionManager) CONTEXT.get("connectionManager"),
+                (TrainingTypeDao) CONTEXT.get("trainingTypeDao"),
+                (AthleteDao) CONTEXT.get("athleteDao"));
+        CONTEXT.put("trainingDao", trainingDao);
     }
 
     /**

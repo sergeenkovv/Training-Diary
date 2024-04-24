@@ -8,6 +8,8 @@ import java.sql.DriverManager;
 /**
  * Manages database connections using the provided URL, username, and password.
  * This class facilitates the establishment of database connections by encapsulating connection details.
+ *
+ * @author sergeenkovv
  */
 @AllArgsConstructor
 public class ConnectionManager {

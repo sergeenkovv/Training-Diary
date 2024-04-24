@@ -26,6 +26,8 @@ import java.util.List;
  * {@link AuditService} for auditing purposes,
  * {@link TrainingService} for training management, and
  * {@link TrainingTypeService} for accessing available training types.
+ *
+ * @author sergeenkovv
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +60,7 @@ public class AthleteController {
             throw new InvalidArgumentException("Enter a number greater than 0. letters cannot be used!");
         }
 
-        trainingService.addTraining(athleteId, Long.valueOf(trainingType), Integer.parseInt(setsAmount));
+        trainingService.addTraining(athleteId, trainingType, Integer.parseInt(setsAmount));
     }
 
     /**
@@ -80,7 +82,7 @@ public class AthleteController {
             throw new DateTimeParseException("Incorrect date format. it should match yyyy-MM-dd!", date, -1);
         }
 
-        trainingService.editTraining(athleteId, LocalDate.parse(date), Long.valueOf(trainingType), setsAmount);
+        trainingService.editTraining(athleteId, LocalDate.parse(date), trainingType, Integer.parseInt(setsAmount));
     }
 
     /**
@@ -140,8 +142,8 @@ public class AthleteController {
      *
      * @param trainingTypeName the name of the training type to delete
      */
-    public void deleteTrainingType(Long id) {
-        trainingTypeService.deleteTrainingType(id);
+    public void deleteTrainingType(String trainingType) {
+        trainingTypeService.deleteTrainingType(trainingType);
     }
 
     /**

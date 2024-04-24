@@ -9,6 +9,8 @@ import java.util.Properties;
 /**
  * Utility class for managing application properties.
  * This class provides methods for loading and accessing properties from the "application.properties" file.
+ *
+ * @author sergeenkovv
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PropertiesUtil {

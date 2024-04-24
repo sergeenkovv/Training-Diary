@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 /**
  * The LiquibaseMigration class demonstrates how to use Liquibase for database migrations.
  * This class provides methods for running migrations and obtaining the singleton instance of LiquibaseMigration.
+ *
+ * @author sergeenkovv
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LiquibaseMigration {
@@ -30,20 +31,18 @@ public class LiquibaseMigration {
      * @throws RuntimeException if an error occurs during migration
      */
     public void runMigrations(Connection connection) {
-        try (Connection conn = connection) {
-            try (PreparedStatement preparedStatement = conn.prepareStatement(SQL_CREATE_SCHEMA)) {
-                preparedStatement.executeUpdate();
-                Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
-                database.setLiquibaseSchemaName("migration");
+        try (Connection conn = connection;
+             PreparedStatement preparedStatement = conn.prepareStatement(SQL_CREATE_SCHEMA)) {
+            preparedStatement.executeUpdate();
 
-                Liquibase liquibase = new Liquibase("db/changelog/changelog.xml", new ClassLoaderResourceAccessor(), database);
-                liquibase.update();
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
+            database.setLiquibaseSchemaName("migration");
 
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage());
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Liquibase liquibase = new Liquibase("db/changelog/changelog.xml", new ClassLoaderResourceAccessor(), database);
+            liquibase.update();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 

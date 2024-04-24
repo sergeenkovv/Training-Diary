@@ -3,6 +3,8 @@ package com.ivan.in;
 /**
  * The ConsoleOutputData class implements the OutputData interface for displaying output on the console.
  * It provides methods for printing data to the standard output and standard error streams.
+ *
+ * @author sergeenkovv
  */
 public class ConsoleOutputData implements OutputData {
 

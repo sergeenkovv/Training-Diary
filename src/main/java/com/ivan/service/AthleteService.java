@@ -6,6 +6,8 @@ import java.util.List;
 
 /**
  * This interface provides methods to interact with athlete data.
+ *
+ * @author sergeenkovv
  */
 public interface AthleteService {
 
@@ -19,5 +21,5 @@ public interface AthleteService {
      *
      * @param id The unique identifier of the athlete.
      */
-    Athlete getAthleteByAthleteId(Long id);
+    Athlete getById(Long id);
 }

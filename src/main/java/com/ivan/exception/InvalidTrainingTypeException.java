@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown when an invalid training type is encountered.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class InvalidTrainingTypeException extends RuntimeException {
 

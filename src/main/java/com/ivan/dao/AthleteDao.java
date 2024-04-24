@@ -8,6 +8,8 @@ import java.util.Optional;
 /**
  * Interface for accessing athlete data.
  * Extends {@link GeneralDao} with key type {@link Long} and entity type {@link Athlete}.
+ *
+ * @author sergeenkovv
  */
 public interface AthleteDao extends GeneralDao<Long, Athlete> {
 
@@ -20,7 +22,7 @@ public interface AthleteDao extends GeneralDao<Long, Athlete> {
     Optional<Athlete> findByLogin(String login);
 
     /**
-     * Finds an athlete by their ID.
+     * Finds an athlete by ID.
      *
      * @param id The ID of the athlete to find.
      * @return An {@link Optional} containing the athlete if found, otherwise an empty {@link Optional}.

@@ -10,11 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DAO implementation for {@link TrainingTypeDao} interface.
+ *
+ * @author sergeenkovv
+ */
 @RequiredArgsConstructor
 public class TrainingTypeDaoImpl implements TrainingTypeDao {
 
     private final ConnectionManager connectionProvider;
 
+    /**
+     * Retrieves all training types from the database.
+     *
+     * @return a list of all training types
+     */
     @Override
     public List<TrainingType> findAll() {
         String sqlFindAll = """
@@ -35,6 +45,12 @@ public class TrainingTypeDaoImpl implements TrainingTypeDao {
         }
     }
 
+    /**
+     * Searches for a training type by id.
+     *
+     * @param id the training type's id
+     * @return an optional training type with the given id if found, or empty optional otherwise
+     */
     @Override
     public Optional<TrainingType> findById(Long id) {
         String sqlFindById = """
@@ -55,6 +71,36 @@ public class TrainingTypeDaoImpl implements TrainingTypeDao {
         }
     }
 
+    /**
+     * Searches for a training type by type name.
+     *
+     * @param typeName the training type's name
+     * @return an optional training type with the given type name if found, or empty optional otherwise
+     */
+    @Override
+    public Optional<TrainingType> findByTypeName(String typeName) {
+        String sqlFindByTypeName = """
+                SELECT * FROM develop.training_types WHERE type_name = ?
+                """;
+        try (Connection connection = connectionProvider.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sqlFindByTypeName)) {
+            preparedStatement.setString(1, typeName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            return resultSet.next() ?
+                    Optional.of(buildTrainingType(resultSet))
+                    : Optional.empty();
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes a training type by its id.
+     *
+     * @param id the training type's id
+     * @return {@code true} if the training type was deleted successfully, {@code false} otherwise
+     */
     @Override
     public boolean delete(Long id) {
         String sqlDelete = """
@@ -70,6 +116,12 @@ public class TrainingTypeDaoImpl implements TrainingTypeDao {
         }
     }
 
+    /**
+     * Saves a training type to the database.
+     *
+     * @param trainingType the training type to save
+     * @return the saved training type with the generated id
+     */
     @Override
     public TrainingType save(TrainingType trainingType) {
         String sqlSave = """
@@ -91,6 +143,13 @@ public class TrainingTypeDaoImpl implements TrainingTypeDao {
         }
     }
 
+    /**
+     * Builds a {@link TrainingType} instance from a {@link ResultSet}.
+     *
+     * @param resultSet the result set to build the training type instance from
+     * @return the built training type instance
+     * @throws SQLException if there is an error reading from the result set
+     */
     private TrainingType buildTrainingType(ResultSet resultSet) throws SQLException {
         return TrainingType.builder()
                 .id(resultSet.getLong("id"))

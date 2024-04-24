@@ -3,6 +3,8 @@ package com.ivan.exception;
 /**
  * Exception thrown when the training limit is exceeded.
  * This exception extends {@link RuntimeException}.
+ *
+ * @author sergeenkovv
  */
 public class TrainingLimitExceededException extends RuntimeException {
 

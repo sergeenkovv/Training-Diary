@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 /**
  * The ConsoleInputData class implements the InputData interface for reading data from the console input.
  * It provides methods for reading user input and closing the input stream.
+ *
+ * @author sergeenkovv
  */
 public class ConsoleInputData implements InputData {
 

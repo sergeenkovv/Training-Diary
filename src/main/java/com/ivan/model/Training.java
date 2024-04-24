@@ -11,6 +11,8 @@ import java.time.LocalDate;
  * Represents the Training entity.
  * This class is annotated with Lombok annotations such as {@link Data}, {@link NoArgsConstructor},
  * {@link AllArgsConstructor}, and {@link Builder}.
+ *
+ * @author sergeenkovv
  */
 @Data
 @NoArgsConstructor
@@ -33,9 +35,9 @@ public class Training {
     /**
      * The type of training session.
      */
-    private Long typeId;
+    private TrainingType trainingType;
     /**
      * The ID of the athlete associated with the training session.
      */
-    private Long athleteId;
+    private Athlete athlete;
 }
