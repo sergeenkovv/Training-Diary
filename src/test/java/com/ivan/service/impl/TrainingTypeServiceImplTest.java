@@ -75,9 +75,9 @@ class TrainingTypeServiceImplTest {
     @DisplayName("Test deleteTrainingType method")
     @Test
     void delete_Success() {
-        when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.of(trainingType1));
+        when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.of(trainingType1));
 
-        trainingTypeServiceImpl.deleteTrainingType(trainingType1.getId());
+        trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName());
 
         verify(trainingTypeDao, times(1)).delete(trainingType1.getId());
     }
@@ -85,37 +85,49 @@ class TrainingTypeServiceImplTest {
     @DisplayName("Test deleteTrainingType method with exception")
     @Test
     void delete_InvalidTrainingTypeException() {
-        when(trainingTypeDao.findById(trainingType1.getId())).thenReturn(Optional.empty());
+        when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getId()))
+        assertThatThrownBy(() -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName()))
                 .isInstanceOf(InvalidTrainingTypeException.class)
                 .hasMessage("Such type of training does not exist!");
     }
 
-    @DisplayName("Test getByTypeId method")
+    @DisplayName("Test getById method")
+    @Test
+    void getById_Success() {
+        when(trainingTypeDao.findById(trainingType2.getId())).thenReturn(Optional.of(trainingType2));
+
+        TrainingType result = trainingTypeServiceImpl.getById(trainingType2.getId());
+
+        assertThat(result).isEqualTo(trainingType2);
+    }
+
+    @DisplayName("Test getByTypeId method with exception")
+    @Test
+    void getById_InvalidTrainingTypeException() {
+        when(trainingTypeDao.findByTypeName(null)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeName(null))
+                .isInstanceOf(InvalidTrainingTypeException.class)
+                .hasMessage("Such type of training does not exist!");
+    }
+
+    @DisplayName("Test getByTypeName method")
     @Test
     void getByTypeName_Success() {
-        String typeName = "CHEST";
-        Long typeId = 3L;
-        TrainingType expectedTrainingType = TrainingType.builder()
-                .id(typeId)
-                .typeName(typeName)
-                .build();
+        when(trainingTypeDao.findByTypeName(trainingType2.getTypeName())).thenReturn(Optional.of(trainingType2));
 
-        when(trainingTypeDao.findById(typeId)).thenReturn(Optional.of(expectedTrainingType));
+        TrainingType result = trainingTypeServiceImpl.getByTypeName(trainingType2.getTypeName());
 
-        TrainingType result = trainingTypeServiceImpl.getByTypeId(typeId);
-
-        assertThat(result).isEqualTo(expectedTrainingType);
+        assertThat(result).isEqualTo(trainingType2);
     }
 
     @DisplayName("Test getByTypeId method with exception")
     @Test
     void getByTypeName_InvalidTrainingTypeException() {
-        Long typeName = null;
-        when(trainingTypeDao.findById(typeName)).thenReturn(Optional.empty());
+        when(trainingTypeDao.findByTypeName(null)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeId(typeName))
+        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeName(null))
                 .isInstanceOf(InvalidTrainingTypeException.class)
                 .hasMessage("Such type of training does not exist!");
     }

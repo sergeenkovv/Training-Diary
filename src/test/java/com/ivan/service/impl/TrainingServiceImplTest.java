@@ -74,24 +74,24 @@ class TrainingServiceImplTest {
                 .id(1L)
                 .setsAmount(3)
                 .date(LocalDate.now())
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
 
         training2 = Training.builder()
                 .id(2L)
                 .setsAmount(8)
                 .date(LocalDate.parse("2022-11-11"))
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
 
         training3 = Training.builder()
                 .id(3L)
                 .setsAmount(5)
                 .date(LocalDate.parse("2020-11-11"))
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
     }
 
@@ -99,10 +99,10 @@ class TrainingServiceImplTest {
     @Test
     void addTraining_Success() {
         when(trainingDao.findByAthleteIdAndTrainingDate(anyLong(), any(LocalDate.class))).thenReturn(Optional.empty());
-        when(athleteService.getAthleteByAthleteId(training1.getAthleteId())).thenReturn(new Athlete());
-        when(trainingTypeService.getByTypeId(training1.getTypeId())).thenReturn(trainingType);
+        when(athleteService.getById(training1.getAthlete().getId())).thenReturn(new Athlete());
+        when(trainingTypeService.getByTypeName(training1.getTrainingType().getTypeName())).thenReturn(trainingType);
 
-        trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount());
+        trainingService.addTraining(training1.getAthlete().getId(), training1.getTrainingType().getTypeName(), training1.getSetsAmount());
 
         verify(trainingDao, times(1)).save(any(Training.class));
     }
@@ -113,30 +113,30 @@ class TrainingServiceImplTest {
         when(trainingDao.findByAthleteIdAndTrainingDate(training1.getId(), LocalDate.now())).thenReturn(Optional.ofNullable(training1));
 
         assertThrows(TrainingLimitExceededException.class,
-                () -> trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount()));
+                () -> trainingService.addTraining(training1.getAthlete().getId(), training1.getTrainingType().getTypeName(), training1.getSetsAmount()));
     }
 
     @DisplayName("Test addTraining method with exception")
     @Test
     void addTraining_InvalidTrainingTypeException() {
         when(trainingDao.findByAthleteIdAndTrainingDate(training1.getId(), LocalDate.now())).thenReturn(Optional.ofNullable(training1));
-        when(trainingTypeService.getByTypeId(anyLong()))
+        when(trainingTypeService.getByTypeName(anyString()))
                 .thenThrow(new InvalidTrainingTypeException("Such type of training does not exist!"));
 
         assertThrows(InvalidTrainingTypeException.class,
-                () -> trainingService.addTraining(training1.getAthleteId(), training1.getTypeId(), training1.getSetsAmount()));
+                () -> trainingService.addTraining(training2.getAthlete().getId(), training1.getTrainingType().getTypeName(), training1.getSetsAmount()));
     }
 
     @DisplayName("Test editTraining method")
     @Test
     void editTraining_Success() {
-        when(trainingTypeService.getByTypeId(trainingType.getId())).thenReturn(trainingType);
+        when(trainingTypeService.getByTypeName(trainingType.getTypeName())).thenReturn(trainingType);
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
-        when(athleteService.getAthleteByAthleteId(training1.getId())).thenReturn(athlete);
+        when(athleteService.getById(training1.getId())).thenReturn(athlete);
 
-        trainingService.editTraining(athlete.getId(), training1.getDate(), trainingType.getId(), "5");
+        trainingService.editTraining(athlete.getId(), training1.getDate(), trainingType.getTypeName(), 5);
 
-        verify(trainingTypeService).getByTypeId(trainingType.getId());
+        verify(trainingTypeService).getByTypeName(trainingType.getTypeName());
         verify(trainingDao).findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate());
         assertEquals(5, training1.getSetsAmount());
     }
@@ -145,20 +145,20 @@ class TrainingServiceImplTest {
     @Test
     void editTraining_InvalidTrainingTypeException() {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
-        when(trainingTypeService.getByTypeId(anyLong()))
+        when(trainingTypeService.getByTypeName(anyString()))
                 .thenThrow(new InvalidTrainingTypeException("Such type of training does not exist!"));
 
         assertThrows(InvalidTrainingTypeException.class,
-                () -> trainingService.editTraining(training1.getAthleteId(), training1.getDate(), training1.getTypeId(), String.valueOf(training1.getSetsAmount())));
+                () -> trainingService.editTraining(training1.getAthlete().getId(), training1.getDate(), training1.getTrainingType().getTypeName(), training1.getSetsAmount()));
     }
 
     @DisplayName("Test editTraining method with exception")
     @Test
     void editTraining_TrainingNotFoundException() {
-        when(trainingDao.findByAthleteIdAndTrainingDate(training1.getAthleteId(), LocalDate.now())).thenReturn(Optional.empty());
+        when(trainingDao.findByAthleteIdAndTrainingDate(training1.getAthlete().getId(), LocalDate.now())).thenReturn(Optional.empty());
 
         assertThrows(TrainingNotFoundException.class,
-                () -> trainingService.editTraining(training1.getAthleteId(), LocalDate.now(), training1.getTypeId(), String.valueOf(training1.getSetsAmount())));
+                () -> trainingService.editTraining(training1.getAthlete().getId(), LocalDate.now(), training1.getTrainingType().getTypeName(), training1.getSetsAmount()));
     }
 
     @DisplayName("Test getTrainingsSortedByDate method")
@@ -167,10 +167,10 @@ class TrainingServiceImplTest {
         List<Training> unsortedTrainings = Arrays.asList(training3, training1, training2);
         List<Training> sortedTrainings = Arrays.asList(training3, training2, training1);
 
-        when(athleteService.getAthleteByAthleteId(training1.getAthleteId())).thenReturn(athlete);
-        when(trainingDao.findAllByAthleteId(training1.getAthleteId())).thenReturn(unsortedTrainings);
+        when(athleteService.getById(training1.getAthlete().getId())).thenReturn(athlete);
+        when(trainingDao.findAllByAthleteId(training1.getAthlete().getId())).thenReturn(unsortedTrainings);
 
-        List<Training> result = trainingService.getTrainingsSortedByDate(training1.getAthleteId());
+        List<Training> result = trainingService.getTrainingsSortedByDate(training1.getAthlete().getId());
 
         assertThat(result).isNotNull().hasSize(3).containsExactlyElementsOf(sortedTrainings);
     }
@@ -182,10 +182,10 @@ class TrainingServiceImplTest {
         List<Training> sortedTrainings = Arrays.asList(training2, training3, training1);
 
 
-        when(athleteService.getAthleteByAthleteId(training1.getAthleteId())).thenReturn(athlete);
-        when(trainingDao.findAllByAthleteId(training1.getAthleteId())).thenReturn(unsortedTrainings);
+        when(athleteService.getById(training1.getAthlete().getId())).thenReturn(athlete);
+        when(trainingDao.findAllByAthleteId(training1.getAthlete().getId())).thenReturn(unsortedTrainings);
 
-        List<Training> result = trainingService.getTrainingsSortedBySetsAmount(training1.getAthleteId());
+        List<Training> result = trainingService.getTrainingsSortedBySetsAmount(training1.getAthlete().getId());
 
         assertThat(result).isNotNull().hasSize(3).containsExactlyElementsOf(sortedTrainings);
     }
@@ -194,9 +194,9 @@ class TrainingServiceImplTest {
     @Test
     void deleteTraining_Success() {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
-        when(athleteService.getAthleteByAthleteId(training1.getId())).thenReturn(athlete);
+        when(athleteService.getById(training1.getId())).thenReturn(athlete);
 
-        trainingService.deleteTraining(training1.getAthleteId(), training1.getDate());
+        trainingService.deleteTraining(training1.getAthlete().getId(), training1.getDate());
 
         verify(trainingDao).delete(training1.getId());
     }
@@ -207,7 +207,7 @@ class TrainingServiceImplTest {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.empty());
 
         assertThrows(TrainingNotFoundException.class,
-                () -> trainingService.deleteTraining(training1.getAthleteId(), training1.getDate()));
+                () -> trainingService.deleteTraining(training1.getAthlete().getId(), training1.getDate()));
     }
 
     @DisplayName("Test getTrainingByAthleteIdAndDate method")
@@ -215,7 +215,7 @@ class TrainingServiceImplTest {
     void getTrainingByAthleteIdAndDate_Success() {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
 
-        Training result = trainingService.getTrainingByAthleteIdAndDate(training1.getAthleteId(), training1.getDate());
+        Training result = trainingService.getTrainingByAthleteIdAndDate(training1.getAthlete().getId(), training1.getDate());
 
         assertEquals(training1, result);
     }
@@ -226,6 +226,6 @@ class TrainingServiceImplTest {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.empty());
 
         assertThrows(TrainingNotFoundException.class,
-                () -> trainingService.getTrainingByAthleteIdAndDate(training1.getAthleteId(), training1.getDate()));
+                () -> trainingService.getTrainingByAthleteIdAndDate(training1.getAthlete().getId(), training1.getDate()));
     }
 }

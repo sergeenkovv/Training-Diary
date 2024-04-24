@@ -37,8 +37,8 @@ class TrainingDaoImplTest extends PostgresTestContainer {
         liquibaseTest.runMigrations(connectionManager.getConnection());
 
         athleteDao = new AthleteDaoImpl(connectionManager);
-        trainingDao = new TrainingDaoImpl(connectionManager);
         trainingTypeDao = new TrainingTypeDaoImpl(connectionManager);
+        trainingDao = new TrainingDaoImpl(connectionManager, trainingTypeDao, athleteDao);
     }
 
     Athlete athlete;
@@ -67,8 +67,8 @@ class TrainingDaoImplTest extends PostgresTestContainer {
                 .id(1L)
                 .setsAmount(3)
                 .date(LocalDate.now())
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
         trainingDao.save(training1);
 
@@ -76,8 +76,8 @@ class TrainingDaoImplTest extends PostgresTestContainer {
                 .id(2L)
                 .setsAmount(8)
                 .date(LocalDate.parse("2022-11-11"))
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
         trainingDao.save(training2);
 
@@ -85,8 +85,8 @@ class TrainingDaoImplTest extends PostgresTestContainer {
                 .id(3L)
                 .setsAmount(5)
                 .date(LocalDate.parse("2020-11-11"))
-                .typeId(trainingType.getId())
-                .athleteId(athlete.getId())
+                .trainingType(trainingType)
+                .athlete(athlete)
                 .build();
         trainingDao.save(training3);
     }
@@ -94,7 +94,7 @@ class TrainingDaoImplTest extends PostgresTestContainer {
     @DisplayName("findAllByAthleteId method verification test")
     @Test
     void findAllByAthleteId() {
-        List<Training> trainingList = trainingDao.findAllByAthleteId(training1.getAthleteId());
+        List<Training> trainingList = trainingDao.findAllByAthleteId(training1.getAthlete().getId());
         assertFalse(trainingList.isEmpty());
         assertEquals(3, trainingList.size());
     }
@@ -113,7 +113,7 @@ class TrainingDaoImplTest extends PostgresTestContainer {
     @DisplayName("findByAthleteIdAndTrainingDate method verification test")
     @Test
     void findByAthleteIdAndTrainingDate() {
-        Optional<Training> foundTraining = trainingDao.findByAthleteIdAndTrainingDate(training2.getAthleteId(), LocalDate.parse("2022-11-11"));
+        Optional<Training> foundTraining = trainingDao.findByAthleteIdAndTrainingDate(training2.getAthlete().getId(), LocalDate.parse("2022-11-11"));
         assertTrue(foundTraining.isPresent());
         assertEquals(8, foundTraining.get().getSetsAmount());
 
@@ -145,8 +145,8 @@ class TrainingDaoImplTest extends PostgresTestContainer {
         Training updatedTraining = updatedTrainingOptional.get();
         assertEquals(3, updatedTraining.getSetsAmount());
         assertEquals(training1.getDate(), updatedTraining.getDate());
-        assertEquals(training1.getTypeId(), updatedTraining.getTypeId());
-        assertEquals(training1.getAthleteId(), updatedTraining.getAthleteId());
+        assertEquals(training1.getTrainingType(), updatedTraining.getTrainingType());
+        assertEquals(training1.getAthlete(), updatedTraining.getAthlete());
     }
 
     @DisplayName("save method verification test")
@@ -156,7 +156,7 @@ class TrainingDaoImplTest extends PostgresTestContainer {
         assertNotNull(savedTraining.getId());
         assertEquals(training1.getSetsAmount(), savedTraining.getSetsAmount());
         assertEquals(training1.getDate(), savedTraining.getDate());
-        assertEquals(training1.getTypeId(), savedTraining.getTypeId());
-        assertEquals(training1.getAthleteId(), savedTraining.getAthleteId());
+        assertEquals(training1.getTrainingType(), savedTraining.getTrainingType());
+        assertEquals(training1.getAthlete(), savedTraining.getAthlete());
     }
 }

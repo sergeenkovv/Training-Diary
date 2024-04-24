@@ -87,10 +87,10 @@ class AthleteDaoImplTest extends PostgresTestContainer {
     @DisplayName("save verification test")
     @Test
     void save() {
-        Athlete savedAthlete = athlete1;
+        Athlete savedAthlete = athlete2;
         assertNotNull(savedAthlete.getId());
-        assertEquals(athlete1.getLogin(), savedAthlete.getLogin());
-        assertEquals(athlete1.getPassword(), savedAthlete.getPassword());
-        assertEquals(athlete1.getRole(), savedAthlete.getRole());
+        assertEquals(athlete2.getLogin(), savedAthlete.getLogin());
+        assertEquals(athlete2.getPassword(), savedAthlete.getPassword());
+        assertEquals(athlete2.getRole(), savedAthlete.getRole());
     }
 }
