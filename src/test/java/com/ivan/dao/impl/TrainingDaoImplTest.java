@@ -31,10 +31,11 @@ class TrainingDaoImplTest extends PostgresTestContainer {
         ConnectionManager connectionManager = new ConnectionManager(
                 container.getJdbcUrl(),
                 container.getUsername(),
-                container.getPassword()
+                container.getPassword(),
+                container.getDriverClassName()
         );
-        LiquibaseMigration liquibaseTest = LiquibaseMigration.getInstance();
-        liquibaseTest.runMigrations(connectionManager.getConnection());
+        LiquibaseMigration liquibaseTest = new LiquibaseMigration(connectionManager.getConnection(), "db/changelog/changelog.xml", "migration");
+        liquibaseTest.runMigrations();
 
         athleteDao = new AthleteDaoImpl(connectionManager);
         trainingTypeDao = new TrainingTypeDaoImpl(connectionManager);

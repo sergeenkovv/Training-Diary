@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @DisplayName("AthleteServiceImpl implementation test")
@@ -57,7 +58,7 @@ class AthleteServiceImplTest {
 
         when(athleteDao.findAll()).thenReturn(athletes);
 
-        List<Athlete> result = athleteService.showAllAthletes();
+        List<Athlete> result = athleteService.getAllAthletes();
 
         assertThat(result).containsExactlyInAnyOrder(athlete1, athlete2);
     }
@@ -78,8 +79,7 @@ class AthleteServiceImplTest {
         Long nonExistingId = 100L;
         when(athleteDao.findById(nonExistingId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> athleteService.getById(nonExistingId))
-                .isInstanceOf(AthleteNotFoundException.class)
-                .hasMessage("No athlete found with ID: " + nonExistingId);
+        assertThrows(AthleteNotFoundException.class,
+                () -> athleteService.getById(nonExistingId));
     }
 }

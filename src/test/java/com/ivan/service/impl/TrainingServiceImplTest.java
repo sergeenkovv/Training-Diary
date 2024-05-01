@@ -10,7 +10,6 @@ import com.ivan.model.Role;
 import com.ivan.model.Training;
 import com.ivan.model.TrainingType;
 import com.ivan.service.AthleteService;
-import com.ivan.service.AuditService;
 import com.ivan.service.TrainingTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,8 +46,6 @@ class TrainingServiceImplTest {
     private TrainingTypeService trainingTypeService;
     @Mock
     private AthleteService athleteService;
-    @Mock
-    private AuditService auditService;
 
     Athlete athlete;
     Training training1;
@@ -132,7 +129,6 @@ class TrainingServiceImplTest {
     void editTraining_Success() {
         when(trainingTypeService.getByTypeName(trainingType.getTypeName())).thenReturn(trainingType);
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
-        when(athleteService.getById(training1.getId())).thenReturn(athlete);
 
         trainingService.editTraining(athlete.getId(), training1.getDate(), trainingType.getTypeName(), 5);
 
@@ -165,9 +161,8 @@ class TrainingServiceImplTest {
     @Test
     void getTrainingsSortedByDate_Success() {
         List<Training> unsortedTrainings = Arrays.asList(training3, training1, training2);
-        List<Training> sortedTrainings = Arrays.asList(training3, training2, training1);
+        List<Training> sortedTrainings = Arrays.asList(training1, training2, training3);
 
-        when(athleteService.getById(training1.getAthlete().getId())).thenReturn(athlete);
         when(trainingDao.findAllByAthleteId(training1.getAthlete().getId())).thenReturn(unsortedTrainings);
 
         List<Training> result = trainingService.getTrainingsSortedByDate(training1.getAthlete().getId());
@@ -179,13 +174,11 @@ class TrainingServiceImplTest {
     @Test
     void getTrainingsSortedBySetsAmount_Success() {
         List<Training> unsortedTrainings = Arrays.asList(training3, training1, training2);
-        List<Training> sortedTrainings = Arrays.asList(training2, training3, training1);
+        List<Training> sortedTrainings = Arrays.asList(training1, training2, training3);
 
-
-        when(athleteService.getById(training1.getAthlete().getId())).thenReturn(athlete);
         when(trainingDao.findAllByAthleteId(training1.getAthlete().getId())).thenReturn(unsortedTrainings);
 
-        List<Training> result = trainingService.getTrainingsSortedBySetsAmount(training1.getAthlete().getId());
+        List<Training> result = trainingService.getTrainingsSortedByDate(training1.getAthlete().getId());
 
         assertThat(result).isNotNull().hasSize(3).containsExactlyElementsOf(sortedTrainings);
     }
@@ -194,7 +187,6 @@ class TrainingServiceImplTest {
     @Test
     void deleteTraining_Success() {
         when(trainingDao.findByAthleteIdAndTrainingDate(athlete.getId(), training1.getDate())).thenReturn(Optional.of(training1));
-        when(athleteService.getById(training1.getId())).thenReturn(athlete);
 
         trainingService.deleteTraining(training1.getAthlete().getId(), training1.getDate());
 

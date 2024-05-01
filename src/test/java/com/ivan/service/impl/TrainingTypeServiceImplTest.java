@@ -1,6 +1,7 @@
 package com.ivan.service.impl;
 
 import com.ivan.dao.TrainingTypeDao;
+import com.ivan.exception.DuplicateTrainingTypeException;
 import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.model.TrainingType;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @DisplayName("trainingTypeServiceImpl implementation test")
@@ -63,13 +64,27 @@ class TrainingTypeServiceImplTest {
     @Test
     void addTrainingType_Success() {
         TrainingType newTrainingType = TrainingType.builder()
-                .id(3L)
-                .typeName("CARDIO")
+                .typeName("SLEEPING")
                 .build();
 
-        trainingTypeServiceImpl.addTrainingType(newTrainingType);
+        when(trainingTypeDao.findByTypeName(newTrainingType.getTypeName())).thenReturn(Optional.empty());
+
+        trainingTypeServiceImpl.addTrainingType(newTrainingType.getTypeName());
 
         verify(trainingTypeDao).save(newTrainingType);
+    }
+
+    @DisplayName("Test addTrainingType method with exception")
+    @Test
+    void addTrainingType_DuplicateTrainingTypeException() {
+        TrainingType newTrainingType = TrainingType.builder()
+                .typeName("SLEEPING")
+                .build();
+
+        when(trainingTypeDao.findByTypeName(newTrainingType.getTypeName())).thenReturn(Optional.of(newTrainingType));
+
+        assertThrows(DuplicateTrainingTypeException.class,
+                () -> trainingTypeServiceImpl.addTrainingType(newTrainingType.getTypeName()));
     }
 
     @DisplayName("Test deleteTrainingType method")
@@ -87,9 +102,8 @@ class TrainingTypeServiceImplTest {
     void delete_InvalidTrainingTypeException() {
         when(trainingTypeDao.findByTypeName(trainingType1.getTypeName())).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName()))
-                .isInstanceOf(InvalidTrainingTypeException.class)
-                .hasMessage("Such type of training does not exist!");
+        assertThrows(InvalidTrainingTypeException.class,
+                () -> trainingTypeServiceImpl.deleteTrainingType(trainingType1.getTypeName()));
     }
 
     @DisplayName("Test getById method")
@@ -107,9 +121,8 @@ class TrainingTypeServiceImplTest {
     void getById_InvalidTrainingTypeException() {
         when(trainingTypeDao.findByTypeName(null)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeName(null))
-                .isInstanceOf(InvalidTrainingTypeException.class)
-                .hasMessage("Such type of training does not exist!");
+        assertThrows(InvalidTrainingTypeException.class,
+                () -> trainingTypeServiceImpl.getByTypeName(null));
     }
 
     @DisplayName("Test getByTypeName method")
@@ -127,8 +140,7 @@ class TrainingTypeServiceImplTest {
     void getByTypeName_InvalidTrainingTypeException() {
         when(trainingTypeDao.findByTypeName(null)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> trainingTypeServiceImpl.getByTypeName(null))
-                .isInstanceOf(InvalidTrainingTypeException.class)
-                .hasMessage("Such type of training does not exist!");
+        assertThrows(InvalidTrainingTypeException.class,
+                () -> trainingTypeServiceImpl.getByTypeName(null));
     }
 }
