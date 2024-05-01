@@ -1,7 +1,5 @@
 package com.ivan.util;
 
-import lombok.AllArgsConstructor;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -11,7 +9,6 @@ import java.sql.DriverManager;
  *
  * @author sergeenkovv
  */
-@AllArgsConstructor
 public class ConnectionManager {
 
     /**
@@ -26,6 +23,18 @@ public class ConnectionManager {
      * The password used for authentication when establishing database connections.
      */
     private final String password;
+
+    public ConnectionManager(String url, String username, String password, String driver) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Retrieves a database connection using the stored connection details.

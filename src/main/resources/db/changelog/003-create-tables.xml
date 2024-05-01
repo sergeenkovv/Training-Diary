@@ -9,46 +9,26 @@
             <column name="id" type="BIGINT" defaultValueComputed="nextval('develop.athlete_id_seq')" remarks="Athlete ID">
                 <constraints primaryKey="true" primaryKeyName="athlete_pkey"/>
             </column>
-            <column name="login" type="VARCHAR(255)" remarks="Athlete login">
-            </column>
-            <column name="password" type="VARCHAR(255)" remarks="Athlete password">
-            </column>
-            <column name="role" type="VARCHAR(255)" remarks="Athlete role">
-            </column>
+            <column name="login" type="VARCHAR(255)" remarks="Athlete login"/>
+            <column name="password" type="VARCHAR(255)" remarks="Athlete password"/>
+            <column name="role" type="VARCHAR(255)" remarks="Athlete role"/>
         </createTable>
 
         <createTable schemaName="develop" tableName="trainings" remarks="Training athletes">
             <column name="id" type="BIGINT" defaultValueComputed="nextval('develop.training_id_seq')" remarks="Training ID">
                 <constraints primaryKey="true" primaryKeyName="training_pkey"/>
             </column>
-            <column name="sets_amount" type="VARCHAR(255)" remarks="Number of sets in the training">
-            </column>
-            <column name="date" type="TIMESTAMP" remarks="Date of the training">
-            </column>
-            <column name="type_id" type="BIGINT" remarks="ID of the training type">
-            </column>
-            <column name="athlete_id" type="BIGINT" remarks="ID of the athlete who conducted the training">
-            </column>
+            <column name="sets_amount" type="VARCHAR(255)" remarks="Number of sets in the training"/>
+            <column name="date" type="TIMESTAMP" remarks="Date of the training"/>
+            <column name="type_id" type="BIGINT" remarks="ID of the training type"/>
+            <column name="athlete_id" type="BIGINT" remarks="ID of the athlete who conducted the training"/>
         </createTable>
 
         <createTable schemaName="develop" tableName="training_types" remarks="All training types">
             <column name="id" type="BIGINT" defaultValueComputed="nextval('develop.training_type_id_seq')" remarks="Training type ID">
                 <constraints primaryKey="true" primaryKeyName="training_type_pkey"/>
             </column>
-            <column name="type_name" type="VARCHAR(255)" remarks="Training type name">
-            </column>
-        </createTable>
-
-        <createTable schemaName="develop" tableName="audit" remarks="Audit of athletes' actions">
-            <column name="id" type="BIGINT" defaultValueComputed="nextval('develop.audit_id_seq')" remarks="Audit ID">
-                <constraints primaryKey="true" primaryKeyName="audit_pkey"/>
-            </column>
-            <column name="athlete_login" type="VARCHAR(255)" remarks="Athlete login">
-            </column>
-            <column name="action_type" type="VARCHAR(255)" remarks="Action type">
-            </column>
-            <column name="date" type="TIMESTAMP" remarks="Date of the action">
-            </column>
+            <column name="type_name" type="VARCHAR(255)" remarks="Training type name"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableSchemaName="develop" baseTableName="trainings" baseColumnNames="type_id"
