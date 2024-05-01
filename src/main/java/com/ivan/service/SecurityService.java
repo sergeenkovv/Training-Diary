@@ -1,5 +1,6 @@
 package com.ivan.service;
 
+import com.ivan.dto.JwtResponse;
 import com.ivan.model.Athlete;
 
 /**
@@ -23,5 +24,5 @@ public interface SecurityService {
      * @param login    The login of the athlete.
      * @param password The password of the athlete.
      */
-    Athlete authorization(String login, String password);
+    JwtResponse authorization(String login, String password);
 }

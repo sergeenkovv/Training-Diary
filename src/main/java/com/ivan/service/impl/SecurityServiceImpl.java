@@ -1,11 +1,13 @@
 package com.ivan.service.impl;
 
+import com.ivan.annotations.Auditable;
+import com.ivan.annotations.Loggable;
 import com.ivan.dao.AthleteDao;
+import com.ivan.dto.JwtResponse;
 import com.ivan.exception.AuthorizationException;
 import com.ivan.exception.RegistrationException;
-import com.ivan.model.ActionType;
 import com.ivan.model.Athlete;
-import com.ivan.service.AuditService;
+import com.ivan.security.JwtTokenProvider;
 import com.ivan.service.SecurityService;
 import lombok.RequiredArgsConstructor;
 
@@ -15,8 +17,8 @@ import java.util.Optional;
  * Implementation of the {@link SecurityService} interface providing
  * functionality for athlete registration and authorization.
  * <p>
- * Requires an {@link AthleteDao} and an {@link AuditService} to be
- * injected for data access and auditing purposes respectively.
+ * Requires an {@link AthleteDao} to be
+ * injected for data access.
  *
  * @author sergeenkovv
  */
@@ -24,7 +26,7 @@ import java.util.Optional;
 public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
-    private final AuditService auditService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * Registers a new athlete with the provided login and password.
@@ -35,6 +37,8 @@ public class SecurityServiceImpl implements SecurityService {
      * @throws RegistrationException If an athlete with the same login already exists.
      */
     @Override
+    @Loggable
+    @Auditable
     public Athlete registration(String login, String password) {
         Optional<Athlete> athlete = athleteDao.findByLogin(login);
 
@@ -46,9 +50,6 @@ public class SecurityServiceImpl implements SecurityService {
                 .login(login)
                 .password(password)
                 .build();
-
-        auditService.audit(
-                ActionType.REGISTRATION, login);
 
         return athleteDao.save(newAthlete);
     }
@@ -63,21 +64,20 @@ public class SecurityServiceImpl implements SecurityService {
      *                                or if the provided password is incorrect.
      */
     @Override
-    public Athlete authorization(String login, String password) {
+    @Loggable
+    @Auditable
+    public JwtResponse authorization(String login, String password) {
         Optional<Athlete> maybeAthlete = athleteDao.findByLogin(login);
 
         if (maybeAthlete.isEmpty()) {
             throw new AuthorizationException("There is no athlete with this login in the database!");
         }
 
-        Athlete athlete = maybeAthlete.get();
-        if (!athlete.getPassword().equals(password)) {
-            throw new AuthorizationException("Incorrect password.");
+        if (!maybeAthlete.get().getPassword().equals(password)) {
+            throw new AuthorizationException("Incorrect password!");
         }
 
-        auditService.audit(
-                ActionType.AUTHORIZATION, login);
-
-        return athlete;
+        String accessToken = jwtTokenProvider.createAccessToken(login);
+        return new JwtResponse(login, accessToken);
     }
 }
