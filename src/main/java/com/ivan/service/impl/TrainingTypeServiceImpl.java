@@ -1,12 +1,15 @@
 package com.ivan.service.impl;
 
+import com.ivan.annotations.Loggable;
 import com.ivan.dao.TrainingTypeDao;
+import com.ivan.exception.DuplicateTrainingTypeException;
 import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.model.TrainingType;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service implementation for managing training types.
@@ -33,11 +36,23 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
     /**
      * Adds a new training type.
      *
-     * @param trainingType the training type to add
+     * @param typeName the training type to add
      */
+
     @Override
-    public void addTrainingType(TrainingType trainingType) {
-        trainingTypeDao.save(trainingType);
+    @Loggable
+    public void addTrainingType(String typeName) {
+        Optional<TrainingType> byTypeName = trainingTypeDao.findByTypeName(typeName);
+
+        if (byTypeName.isPresent()) {
+            throw new DuplicateTrainingTypeException("This type of training already exists!");
+        }
+
+        TrainingType type = TrainingType.builder()
+                .typeName(typeName)
+                .build();
+
+        trainingTypeDao.save(type);
     }
 
     /**
@@ -46,6 +61,7 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
      * @param typeName the name of the training type to delete
      */
     @Override
+    @Loggable
     public void deleteTrainingType(String typeName) {
         trainingTypeDao.delete(getByTypeName(typeName).getId());
     }
