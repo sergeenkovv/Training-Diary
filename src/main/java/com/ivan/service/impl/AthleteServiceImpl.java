@@ -1,5 +1,6 @@
 package com.ivan.service.impl;
 
+import com.ivan.annotations.Loggable;
 import com.ivan.dao.AthleteDao;
 import com.ivan.exception.AthleteNotFoundException;
 import com.ivan.model.Athlete;
@@ -24,7 +25,7 @@ public class AthleteServiceImpl implements AthleteService {
      * @return A list of all athletes.
      */
     @Override
-    public List<Athlete> showAllAthletes() {
+    public List<Athlete> getAllAthletes() {
         return athleteDao.findAll();
     }
 
@@ -39,5 +40,18 @@ public class AthleteServiceImpl implements AthleteService {
     public Athlete getById(Long id) {
         return athleteDao.findById(id)
                 .orElseThrow(() -> new AthleteNotFoundException("No athlete found with ID: " + id));
+    }
+
+    /**
+     * Retrieves an athlete by their login.
+     *
+     * @param login The login of the athlete.
+     * @return The athlete object.
+     * @throws AthleteNotFoundException if no athlete is found with the given login.
+     */
+    @Override
+    public Athlete getByLogin(String login) {
+        return athleteDao.findByLogin(login)
+                .orElseThrow(() -> new AthleteNotFoundException("No athlete found with login: " + login));
     }
 }

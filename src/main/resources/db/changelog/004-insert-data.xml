@@ -11,6 +11,16 @@
             <column name="password" value="trainer"/>
             <column name="role" value="TRAINER"/>
         </insert>
+        <insert tableName="athletes" schemaName="develop">
+            <column name="login" value="vanya"/>
+            <column name="password" value="123"/>
+            <column name="role" value="CLIENT"/>
+        </insert>
+        <insert tableName="athletes" schemaName="develop">
+            <column name="login" value="lesha"/>
+            <column name="password" value="321"/>
+            <column name="role" value="CLIENT"/>
+        </insert>
 
         <insert tableName="training_types" schemaName="develop">
             <column name="type_name" value="CHEST"/>
@@ -24,5 +34,50 @@
         <insert tableName="training_types" schemaName="develop">
             <column name="type_name" value="LEGS"/>
         </insert>
+
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="3"/>
+            <column name="date" value="2024-01-01"/>
+            <column name="type_id" value="1"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="5"/>
+            <column name="date" value="2024-01-3"/>
+            <column name="type_id" value="3"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="3"/>
+            <column name="date" value="2024-01-05"/>
+            <column name="type_id" value="1"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="6"/>
+            <column name="date" value="2024-01-07"/>
+            <column name="type_id" value="2"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="3"/>
+            <column name="date" value="2024-01-10"/>
+            <column name="type_id" value="1"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="5"/>
+            <column name="date" value="2024-01-13"/>
+            <column name="type_id" value="3"/>
+            <column name="athlete_id" value="1"/>
+        </insert>
+
+        <insert tableName="trainings" schemaName="develop">
+            <column name="sets_amount" value="9"/>
+            <column name="date" value="2024-03-13"/>
+            <column name="type_id" value="3"/>
+            <column name="athlete_id" value="2"/>
+        </insert>
+
     </changeSet>
 </databaseChangeLog>

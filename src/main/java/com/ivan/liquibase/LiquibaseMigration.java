@@ -5,8 +5,7 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,41 +16,29 @@ import java.sql.PreparedStatement;
  *
  * @author sergeenkovv
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class LiquibaseMigration {
-
-    private static final LiquibaseMigration LIQUIBASE_MIGRATION = new LiquibaseMigration();
 
     private static final String SQL_CREATE_SCHEMA = "CREATE SCHEMA IF NOT EXISTS migration";
 
+    private final Connection connection;
+    private final String changeLogFile;
+    private final String schemaName;
+
     /**
-     * Runs database migrations using Liquibase.
-     *
-     * @param connection the Connection object to the database
-     * @throws RuntimeException if an error occurs during migration
+     * Performs database migration.
      */
-    public void runMigrations(Connection connection) {
-        try (Connection conn = connection;
-             PreparedStatement preparedStatement = conn.prepareStatement(SQL_CREATE_SCHEMA)) {
+    public void runMigrations() {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_CREATE_SCHEMA)) {
             preparedStatement.executeUpdate();
 
-            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
-            database.setLiquibaseSchemaName("migration");
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+            database.setLiquibaseSchemaName(schemaName);
 
-            Liquibase liquibase = new Liquibase("db/changelog/changelog.xml", new ClassLoaderResourceAccessor(), database);
+            Liquibase liquibase = new Liquibase(changeLogFile, new ClassLoaderResourceAccessor(), database);
             liquibase.update();
-
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-    }
-
-    /**
-     * Returns the singleton instance of LiquibaseMigration.
-     *
-     * @return the singleton instance of LiquibaseMigration
-     */
-    public static LiquibaseMigration getInstance() {
-        return LIQUIBASE_MIGRATION;
     }
 }

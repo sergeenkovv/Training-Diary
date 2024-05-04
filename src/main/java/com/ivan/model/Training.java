@@ -31,7 +31,8 @@ public class Training {
     /**
      * The date of the training session.
      */
-    private LocalDate date;
+    @Builder.Default
+    private LocalDate date = LocalDate.now();
     /**
      * The type of training session.
      */

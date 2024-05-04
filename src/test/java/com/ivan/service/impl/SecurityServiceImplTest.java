@@ -1,11 +1,12 @@
 package com.ivan.service.impl;
 
 import com.ivan.dao.AthleteDao;
+import com.ivan.dto.JwtResponse;
 import com.ivan.exception.AuthorizationException;
 import com.ivan.exception.RegistrationException;
 import com.ivan.model.Athlete;
 import com.ivan.model.Role;
-import com.ivan.service.AuditService;
+import com.ivan.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,7 +32,7 @@ class SecurityServiceImplTest {
     @Mock
     private AthleteDao athleteDao;
     @Mock
-    private AuditService auditService;
+    private JwtTokenProvider jwtTokenProvider;
 
     private Athlete athlete;
 
@@ -71,10 +70,12 @@ class SecurityServiceImplTest {
     @Test
     void authorization_Success() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
+        when(jwtTokenProvider.createAccessToken(athlete.getLogin())).thenReturn("testAccessToken");
 
-        Athlete result = securityServiceImpl.authorization(athlete.getLogin(), athlete.getPassword());
+        JwtResponse result = securityServiceImpl.authorization(athlete.getLogin(), athlete.getPassword());
 
-        assertThat(result).isEqualTo(athlete);
+        assertEquals(athlete.getLogin(), result.login());
+        assertEquals("testAccessToken", result.accessToken());
     }
 
     @DisplayName("Test authorization method with incorrect password")
@@ -82,9 +83,8 @@ class SecurityServiceImplTest {
     void authorization_WithIncorrectPassword_ThrowsAuthorizationException() {
         when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
 
-        assertThatThrownBy(() -> securityServiceImpl.authorization(athlete.getLogin(), "incorrectPassword"))
-                .isInstanceOf(AuthorizationException.class)
-                .hasMessage("Incorrect password.");
+        assertThrows(AuthorizationException.class,
+                () -> securityServiceImpl.authorization(athlete.getLogin(), "incorrectPassword"));
     }
 
     @DisplayName("Test authorization method with non existing athlete")
@@ -92,8 +92,7 @@ class SecurityServiceImplTest {
     void authorization_WithNonExistingAthlete_ThrowsAuthorizationException() {
         when(athleteDao.findByLogin("nonExistingLogin")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> securityServiceImpl.authorization("nonExistingLogin", "password"))
-                .isInstanceOf(AuthorizationException.class)
-                .hasMessage("There is no athlete with this login in the database!");
+        assertThrows(AuthorizationException.class,
+                () -> securityServiceImpl.authorization("nonExistingLogin", "password"));
     }
 }

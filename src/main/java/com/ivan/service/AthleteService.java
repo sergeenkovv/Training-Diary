@@ -14,7 +14,7 @@ public interface AthleteService {
     /**
      * Retrieves a list of all athletes.
      */
-    List<Athlete> showAllAthletes();
+    List<Athlete> getAllAthletes();
 
     /**
      * Retrieves an athlete by their unique identifier.
@@ -22,4 +22,11 @@ public interface AthleteService {
      * @param id The unique identifier of the athlete.
      */
     Athlete getById(Long id);
+
+    /**
+     * Retrieves an athlete by their login.
+     *
+     * @param login The unique identifier of the athlete.
+     */
+    Athlete getByLogin(String login);
 }

@@ -19,9 +19,9 @@ public interface TrainingTypeService {
     /**
      * Adds a new training type.
      *
-     * @param trainingType The training type to be added.
+     * @param typeName The name of training type to be added.
      */
-    void addTrainingType(TrainingType trainingType);
+    void addTrainingType(String typeName);
 
     /**
      * Deletes a training type by it's name.

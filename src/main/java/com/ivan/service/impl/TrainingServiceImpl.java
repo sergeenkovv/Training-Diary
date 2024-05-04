@@ -1,13 +1,13 @@
 package com.ivan.service.impl;
 
+import com.ivan.annotations.Auditable;
+import com.ivan.annotations.Loggable;
 import com.ivan.dao.TrainingDao;
 import com.ivan.exception.TrainingLimitExceededException;
 import com.ivan.exception.TrainingNotFoundException;
-import com.ivan.model.ActionType;
 import com.ivan.model.Training;
 import com.ivan.model.TrainingType;
 import com.ivan.service.AthleteService;
-import com.ivan.service.AuditService;
 import com.ivan.service.TrainingService;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +17,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import static com.ivan.model.ActionType.ADD_TRAINING;
-
 /**
  * Service implementation for managing athlete trainings.
  * This class provides methods to add, edit, and retrieve athlete trainings.
  * It interacts with the database through {@link TrainingDao} for data access,
- * {@link TrainingTypeService} to retrieve training types,
- * {@link AuditService} for auditing purposes, and
+ * {@link TrainingTypeService} to retrieve training types and
  * {@link AthleteService} to retrieve athlete information.
  *
  * @author sergeenkovv
@@ -34,7 +31,6 @@ public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingDao trainingDao;
     private final TrainingTypeService trainingTypeService;
-    private final AuditService auditService;
     private final AthleteService athleteService;
 
     /**
@@ -42,11 +38,13 @@ public class TrainingServiceImpl implements TrainingService {
      * Throws {@link TrainingLimitExceededException} if the athlete has already performed
      * a training of the same type on the current day.
      *
-     * @param athleteId    the ID of the athlete
-     * @param typeName the type of training to add
-     * @param setsAmount   the number of sets for the training
+     * @param athleteId  the ID of the athlete
+     * @param typeName   the type of training to add
+     * @param setsAmount the number of sets for the training
      */
     @Override
+    @Loggable
+    @Auditable
     public void addTraining(Long athleteId, String typeName, Integer setsAmount) {
         Optional<Training> maybeTraining = trainingDao.findByAthleteIdAndTrainingDate(athleteId, LocalDate.now());
         TrainingType byTypeName = trainingTypeService.getByTypeName(typeName);
@@ -57,26 +55,24 @@ public class TrainingServiceImpl implements TrainingService {
 
         Training training = Training.builder()
                 .setsAmount(setsAmount)
-                .date(LocalDate.now())
                 .trainingType(trainingTypeService.getById(byTypeName.getId()))
                 .athlete(athleteService.getById(athleteId))
                 .build();
 
         trainingDao.save(training);
-
-        auditService.audit(
-                ADD_TRAINING, athleteService.getById(athleteId).getLogin());
     }
 
     /**
      * Edits a training for the specified athlete.
      *
-     * @param athleteId    the ID of the athlete
-     * @param date         the date of the training to edit
-     * @param typeName the new type of training
-     * @param setsAmount   the new number of sets
+     * @param athleteId  the ID of the athlete
+     * @param date       the date of the training to edit
+     * @param typeName   the new type of training
+     * @param setsAmount the new number of sets
      */
     @Override
+    @Loggable
+    @Auditable
     public void editTraining(Long athleteId, LocalDate date, String typeName, Integer setsAmount) {
         Training existingTraining = getTrainingByAthleteIdAndDate(athleteId, date);
         TrainingType byTypeId = trainingTypeService.getByTypeName(typeName);
@@ -85,9 +81,6 @@ public class TrainingServiceImpl implements TrainingService {
         existingTraining.setSetsAmount(setsAmount);
 
         trainingDao.update(existingTraining);
-
-        auditService.audit(
-                ActionType.UPDATE_TRAINING, athleteService.getById(athleteId).getLogin());
     }
 
     /**
@@ -97,12 +90,11 @@ public class TrainingServiceImpl implements TrainingService {
      * @return a list of athlete trainings sorted by date
      */
     @Override
+    @Loggable
+    @Auditable
     public List<Training> getTrainingsSortedByDate(Long athleteId) {
         List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
-        allByAthleteId.sort(Comparator.comparing(Training::getDate));
-
-        auditService.audit(
-                ActionType.GET_TRAININGS_SORTED_BY_DATE, athleteService.getById(athleteId).getLogin());
+        allByAthleteId.sort(Comparator.comparing(Training::getDate).reversed());
 
         return allByAthleteId;
     }
@@ -114,12 +106,11 @@ public class TrainingServiceImpl implements TrainingService {
      * @return a list of athlete trainings sorted by sets amount
      */
     @Override
+    @Loggable
+    @Auditable
     public List<Training> getTrainingsSortedBySetsAmount(Long athleteId) {
         List<Training> allByAthleteId = trainingDao.findAllByAthleteId(athleteId);
         allByAthleteId.sort(Comparator.comparingInt(Training::getSetsAmount).reversed());
-
-        auditService.audit(
-                ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athleteService.getById(athleteId).getLogin());
 
         return allByAthleteId;
     }
@@ -131,12 +122,11 @@ public class TrainingServiceImpl implements TrainingService {
      * @param date      the date of the training to delete
      */
     @Override
+    @Loggable
+    @Auditable
     public void deleteTraining(Long athleteId, LocalDate date) {
         Training training = getTrainingByAthleteIdAndDate(athleteId, date);
         trainingDao.delete(training.getId());
-
-        auditService.audit(
-                ActionType.GET_TRAININGS_SORTED_BY_SETS_AMOUNT, athleteService.getById(athleteId).getLogin());
     }
 
     /**
