@@ -1,0 +1,12 @@
+datasource:
+  driver: org.postgresql.Driver
+  username: ivan
+  password: 123
+  url: jdbc:postgresql://localhost:5437/training_diary_db
+liquibase:
+  enabled: true
+  changeLogFile: db/changelog/changelog.xml
+  schemaName: migration
+jwt:
+  secret: cGFzc3dvcmRmb3JJdmFuZ2lnYWNoYWRvdmljaA==
+  access: 3600000

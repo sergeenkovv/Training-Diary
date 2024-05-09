@@ -1,11 +1,12 @@
 package com.ivan.service.impl;
 
-import com.ivan.annotations.Loggable;
 import com.ivan.dao.AthleteDao;
 import com.ivan.exception.AthleteNotFoundException;
 import com.ivan.model.Athlete;
 import com.ivan.service.AthleteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,7 +15,9 @@ import java.util.List;
  *
  * @author sergeenkovv
  */
+@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AthleteServiceImpl implements AthleteService {
 
     private final AthleteDao athleteDao;

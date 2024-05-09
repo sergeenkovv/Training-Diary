@@ -3,14 +3,15 @@ package com.ivan.mapper;
 import com.ivan.dto.TrainingTypeResponse;
 import com.ivan.model.TrainingType;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper
+@Component
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TrainingTypeMapper {
-
-    TrainingTypeMapper INSTANCE = Mappers.getMapper(TrainingTypeMapper.class);
 
     List<TrainingTypeResponse> toDtoList(List<TrainingType> entities);
 }

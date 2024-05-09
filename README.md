@@ -17,6 +17,7 @@
 [HW №1](https://github.com/sergeenkovv/Training-Diary/pull/1)
 [HW №2](https://github.com/sergeenkovv/Training-Diary/pull/2)
 [HW №3](https://github.com/sergeenkovv/Training-Diary/pull/3)
+[HW №4](https://github.com/sergeenkovv/Training-Diary/pull/4)
 
 ## Tech stack
 
@@ -26,6 +27,7 @@
 + Lombok
 + MapStruct
 + AspectJ
++ Swagger
 + JWT
 + JUnit 5
 + AssertJ
@@ -149,6 +151,8 @@ ___
 }
 ```
 
+___
+**GET:** `/api/trainer/client/show-all` — Get all athletes.
 ___
 **GET:** `/api/client/training/show-by-date?login=vanya` — Get training by date.
 

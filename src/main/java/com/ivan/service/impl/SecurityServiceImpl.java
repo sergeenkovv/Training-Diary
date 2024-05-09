@@ -10,6 +10,11 @@ import com.ivan.model.Athlete;
 import com.ivan.security.JwtTokenProvider;
 import com.ivan.service.SecurityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -22,11 +27,15 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SecurityServiceImpl implements SecurityService {
 
     private final AthleteDao athleteDao;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Registers a new athlete with the provided login and password.
@@ -39,6 +48,7 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     @Loggable
     @Auditable
+    @Transactional
     public Athlete registration(String login, String password) {
         Optional<Athlete> athlete = athleteDao.findByLogin(login);
 
@@ -48,7 +58,7 @@ public class SecurityServiceImpl implements SecurityService {
 
         Athlete newAthlete = Athlete.builder()
                 .login(login)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .build();
 
         return athleteDao.save(newAthlete);
@@ -66,16 +76,14 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     @Loggable
     @Auditable
+    @Transactional
     public JwtResponse authorization(String login, String password) {
-        Optional<Athlete> maybeAthlete = athleteDao.findByLogin(login);
+        Optional<Athlete> optionalPlayer = athleteDao.findByLogin(login);
 
-        if (maybeAthlete.isEmpty()) {
-            throw new AuthorizationException("There is no athlete with this login in the database!");
+        if (optionalPlayer.isEmpty()) {
+            throw new AuthorizationException("There is no player with this login in the database!");
         }
-
-        if (!maybeAthlete.get().getPassword().equals(password)) {
-            throw new AuthorizationException("Incorrect password!");
-        }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
 
         String accessToken = jwtTokenProvider.createAccessToken(login);
         return new JwtResponse(login, accessToken);

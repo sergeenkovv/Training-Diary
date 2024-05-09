@@ -5,16 +5,17 @@ import com.ivan.model.Training;
 import com.ivan.model.TrainingType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Mapper
+@Component
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TrainingMapper {
-
-    TrainingMapper INSTANCE = Mappers.getMapper(TrainingMapper.class);
 
     @Mapping(source = "trainingType", target = "typeName", qualifiedByName = "mapTypeName")
     List<TrainingResponse> toDtoList(List<Training> entities);

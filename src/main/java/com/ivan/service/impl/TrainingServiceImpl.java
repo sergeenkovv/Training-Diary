@@ -11,6 +11,8 @@ import com.ivan.service.AthleteService;
 import com.ivan.service.TrainingService;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -26,7 +28,9 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingDao trainingDao;
@@ -45,6 +49,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Loggable
     @Auditable
+    @Transactional
     public void addTraining(Long athleteId, String typeName, Integer setsAmount) {
         Optional<Training> maybeTraining = trainingDao.findByAthleteIdAndTrainingDate(athleteId, LocalDate.now());
         TrainingType byTypeName = trainingTypeService.getByTypeName(typeName);
@@ -73,6 +78,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Loggable
     @Auditable
+    @Transactional
     public void editTraining(Long athleteId, LocalDate date, String typeName, Integer setsAmount) {
         Training existingTraining = getTrainingByAthleteIdAndDate(athleteId, date);
         TrainingType byTypeId = trainingTypeService.getByTypeName(typeName);
@@ -124,6 +130,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Loggable
     @Auditable
+    @Transactional
     public void deleteTraining(Long athleteId, LocalDate date) {
         Training training = getTrainingByAthleteIdAndDate(athleteId, date);
         trainingDao.delete(training.getId());
