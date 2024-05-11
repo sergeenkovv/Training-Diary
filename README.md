@@ -171,7 +171,7 @@ ___
 ## Startup instructions
 
 1. Start docker container with database. Run the command in the terminal in the root directory of the project: ` docker compose up `.
-2. Build the application: ` mvn clean package `.
+2. Build the application: ` mvn clean compile `.
 3. Run the application.
 
 ## Contact me
