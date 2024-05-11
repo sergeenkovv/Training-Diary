@@ -16,13 +16,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <pligun.maven.version>3.11.0</pligun.maven.version>
         <plugin.war.version>3.3.1</plugin.war.version>
-        <spring.version>6.1.4</spring.version>
-        <spring.security.version>6.2.2</spring.security.version>
+        <spring.version>6.1.5</spring.version>
+        <spring.security.version>6.2.3</spring.security.version>
         <jakarta.servlets.version>6.0.0</jakarta.servlets.version>
         <jjwt.version>0.11.5</jjwt.version>
         <postgresql.version>42.6.2</postgresql.version>
-        <liquibase.version>4.25.0</liquibase.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <liquibase.version>4.24.0</liquibase.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
         <lombok.version>1.18.30</lombok.version>
         <jackson.version>2.15.4</jackson.version>
         <jsr310.version>2.16.1</jsr310.version>
@@ -33,6 +33,7 @@
         <mockito.version>5.6.0</mockito.version>
         <assertj.version>3.25.3</assertj.version>
         <testcontainers.version>1.19.4</testcontainers.version>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
     </properties>
 
     <dependencies>
@@ -208,6 +209,18 @@
         </dependency>
 
         <!--        test dependencies       -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
