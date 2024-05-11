@@ -4,7 +4,6 @@ import com.ivan.dto.*;
 import com.ivan.mapper.TrainingMapper;
 import com.ivan.mapper.TrainingTypeMapper;
 import com.ivan.model.Athlete;
-import com.ivan.security.SecurityUtils;
 import com.ivan.service.AthleteService;
 import com.ivan.service.TrainingService;
 import com.ivan.service.TrainingTypeService;
@@ -13,13 +12,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.ivan.security.SecurityUtils.*;
+import static com.ivan.security.SecurityUtils.isValidLogin;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/client")
@@ -50,9 +51,6 @@ public class ClientController {
     })
     @GetMapping("/training/show-by-date")
     public ResponseEntity<?> showTrainingByDate(@RequestParam String login) {
-        if (!isValidLogin(login)) return ResponseEntity.badRequest()
-                .body(new ExceptionResponse("Incorrect login"));
-
         Athlete athlete = athleteService.getByLogin(login);
         List<TrainingResponse> trainings = trainingMapper.toDtoList(
                 trainingService.getTrainingsSortedByDate(athlete.getId()));
@@ -66,9 +64,6 @@ public class ClientController {
     })
     @GetMapping("/training/show-by-sets-amount")
     public ResponseEntity<?> showTrainingBySetsAmount(@RequestParam String login) {
-        if (!isValidLogin(login)) return ResponseEntity.badRequest()
-                .body(new ExceptionResponse("Incorrect login"));
-
         Athlete athlete = athleteService.getByLogin(login);
         List<TrainingResponse> trainings = trainingMapper.toDtoList(
                 trainingService.getTrainingsSortedBySetsAmount(athlete.getId()));
@@ -82,9 +77,6 @@ public class ClientController {
     })
     @PostMapping("/training/add")
     public ResponseEntity<?> addTraining(@RequestBody TrainingRequest request) {
-        if (!isValidLogin(request.athleteLogin())) return ResponseEntity.badRequest()
-                .body(new ExceptionResponse("Incorrect login"));
-
         Athlete athlete = athleteService.getByLogin(request.athleteLogin());
         trainingService.addTraining(athlete.getId(), request.typeName(), request.setsAmount());
         return ResponseEntity.ok(new SuccessResponse("Training added successfully"));
@@ -97,9 +89,6 @@ public class ClientController {
     })
     @DeleteMapping("/training/delete")
     public ResponseEntity<?> deleteTraining(@RequestBody TrainingDateRequest request) {
-        if (!isValidLogin(request.athleteLogin())) return ResponseEntity.badRequest()
-                .body(new ExceptionResponse("Incorrect login"));
-
         Athlete athlete = athleteService.getByLogin(request.athleteLogin());
         trainingService.deleteTraining(athlete.getId(), LocalDate.parse(request.date()));
         return ResponseEntity.ok(new SuccessResponse("Training deleted successfully"));
@@ -112,9 +101,6 @@ public class ClientController {
     })
     @PutMapping("/training/edit")
     public ResponseEntity<?> editTraining(@RequestBody TrainingEditRequest request) {
-        if (!isValidLogin(request.athleteLogin())) return ResponseEntity.badRequest()
-                .body(new ExceptionResponse("Incorrect login"));
-
         Athlete athlete = athleteService.getByLogin(request.athleteLogin());
         trainingService.editTraining(athlete.getId(), LocalDate.parse(request.date()), request.typeName(), request.setsAmount());
         return ResponseEntity.ok(new SuccessResponse("Training edit successfully"));

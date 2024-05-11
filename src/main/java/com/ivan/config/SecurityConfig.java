@@ -28,16 +28,10 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/api/auth/**",
+            "/swagger-ui.html",
             "/swagger-ui/index.html",
-            "/v3/api-docs",
-            "/v3/api-docs/**",
-            "/swagger/resources",
-            "/swagger/resources/**",
-            "/configuration/ui",
-            "/configuration/security",
             "/swagger-ui/**",
-            "/webjars/**",
-            "/swagger-ui.html"
+            "/v3/api-docs/**",
     };
 
     /**

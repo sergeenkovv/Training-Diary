@@ -7,6 +7,7 @@ import com.ivan.dto.JwtResponse;
 import com.ivan.exception.AuthorizationException;
 import com.ivan.exception.RegistrationException;
 import com.ivan.model.Athlete;
+import com.ivan.model.Role;
 import com.ivan.security.JwtTokenProvider;
 import com.ivan.service.SecurityService;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,7 @@ public class SecurityServiceImpl implements SecurityService {
         Athlete newAthlete = Athlete.builder()
                 .login(login)
                 .password(passwordEncoder.encode(password))
+                .role(Role.CLIENT)
                 .build();
 
         return athleteDao.save(newAthlete);

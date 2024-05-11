@@ -6,6 +6,7 @@
 
     <changeSet id="004" author="ivan">
         <insert tableName="athletes" schemaName="develop">
+            <column name="id" value="-1"/>
             <column name="login" value="trainer"/>
             <column name="password" value="$2a$10$DF2h/pI40ImF27XJFX76BeBlUvKzC8MaPtw75oESBIVByv2Py91Ni"/>
             <column name="role" value="TRAINER"/>
@@ -38,25 +39,25 @@
             <column name="sets_amount" value="3"/>
             <column name="date" value="2024-01-01"/>
             <column name="type_id" value="1"/>
-            <column name="athlete_id" value="2"/>
+            <column name="athlete_id" value="1"/>
         </insert>
         <insert tableName="trainings" schemaName="develop">
             <column name="sets_amount" value="5"/>
             <column name="date" value="2024-01-3"/>
             <column name="type_id" value="3"/>
-            <column name="athlete_id" value="2"/>
+            <column name="athlete_id" value="1"/>
         </insert>
         <insert tableName="trainings" schemaName="develop">
             <column name="sets_amount" value="3"/>
             <column name="date" value="2024-01-05"/>
             <column name="type_id" value="1"/>
-            <column name="athlete_id" value="2"/>
+            <column name="athlete_id" value="1"/>
         </insert>
         <insert tableName="trainings" schemaName="develop">
             <column name="sets_amount" value="6"/>
             <column name="date" value="2024-01-07"/>
             <column name="type_id" value="2"/>
-            <column name="athlete_id" value="2"/>
+            <column name="athlete_id" value="1"/>
         </insert>
         <insert tableName="trainings" schemaName="develop">
             <column name="sets_amount" value="3"/>
@@ -75,7 +76,7 @@
             <column name="sets_amount" value="9"/>
             <column name="date" value="2024-03-13"/>
             <column name="type_id" value="3"/>
-            <column name="athlete_id" value="3"/>
+            <column name="athlete_id" value="2"/>
         </insert>
 
     </changeSet>

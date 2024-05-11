@@ -8,13 +8,16 @@ import com.ivan.service.SecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -29,7 +32,7 @@ public class SecurityController {
             @ApiResponse(responseCode = "404", description = "Invalid request body")
     })
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody SecurityRequest request) {
+    public ResponseEntity<?> registration(@RequestBody @Valid SecurityRequest request) {
         Athlete athlete = securityService.registration(request.login(), request.password());
         return ResponseEntity.ok(athleteMapper.toDto(athlete));
     }
@@ -40,7 +43,7 @@ public class SecurityController {
             @ApiResponse(responseCode = "404", description = "Invalid request body")
     })
     @PostMapping("/authorization")
-    public ResponseEntity<JwtResponse> authorize(@RequestBody SecurityRequest request) {
+    public ResponseEntity<JwtResponse> authorize(@RequestBody @Valid SecurityRequest request) {
         JwtResponse response = securityService.authorization(request.login(), request.password());
         return ResponseEntity.ok(response);
     }

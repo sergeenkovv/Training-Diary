@@ -33,11 +33,10 @@ public class TrainerController {
 
     @Operation(summary = "Add a training type")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Training type aded successfully"),
+            @ApiResponse(responseCode = "200", description = "Training type added successfully"),
             @ApiResponse(responseCode = "404", description = "Training Type already exist")
     })
     @PostMapping("/training-types/add")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> addTrainingType(@RequestBody TrainingTypeRequest request) {
         trainingTypeService.addTrainingType(request.typeName());
         return ResponseEntity.ok(new SuccessResponse("Training type added successfully"));
@@ -49,7 +48,6 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Training Type does not exist")
     })
     @DeleteMapping("/training-types/delete")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> deleteTrainingType(@RequestBody TrainingTypeRequest request) {
         trainingTypeService.deleteTrainingType(request.typeName());
         return ResponseEntity.ok(new SuccessResponse("Training type deleted successfully"));
@@ -62,7 +60,6 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Exception!")
     })
     @GetMapping("client/show-all")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> showAllAthletes() {
         List<AthleteResponse> athletes = athleteMapper.toDtoList(
                 athleteService.getAllAthletes());
@@ -75,7 +72,6 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Exception!")
     })
     @GetMapping("/training-types/show-all")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> showAllTrainingTypes() {
         List<TrainingTypeResponse> trainingTypes = trainingTypeMapper.toDtoList(
                 trainingTypeService.getAllTrainingTypes());
@@ -88,7 +84,6 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Exception!")
     })
     @GetMapping("/training/show-by-date")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> showTrainingByDate(@RequestParam String login) {
         Athlete athlete = athleteService.getByLogin(login);
         List<TrainingResponse> trainings = trainingMapper.toDtoList(
@@ -102,7 +97,6 @@ public class TrainerController {
             @ApiResponse(responseCode = "404", description = "Exception!")
     })
     @GetMapping("/training/show-by-sets-amount")
-    @PreAuthorize("hasRole('TRAINER')")
     public ResponseEntity<?> showTrainingBySetsAmount(@RequestParam String login) {
         Athlete athlete = athleteService.getByLogin(login);
         List<TrainingResponse> trainings = trainingMapper.toDtoList(

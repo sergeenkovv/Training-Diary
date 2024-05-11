@@ -30,12 +30,4 @@ public class SecurityUtils {
         User principal = (User) authentication.getPrincipal();
         return principal.getUsername().equals(login);
     }
-
-    public boolean isTrainer() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication == null) throw new SecurityException("Unauthorized!");
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        return authorities.stream().anyMatch(a -> a.getAuthority().equals(Role.TRAINER.name()));
-    }
 }
