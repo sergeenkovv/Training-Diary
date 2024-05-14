@@ -5,6 +5,7 @@ import com.ivan.model.Athlete;
 import com.ivan.model.Role;
 import com.ivan.util.ConnectionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Repository
 @RequiredArgsConstructor
 public class AthleteDaoImpl implements AthleteDao {
 
@@ -110,7 +112,7 @@ public class AthleteDaoImpl implements AthleteDao {
              PreparedStatement preparedStatement = connection.prepareStatement(sqlSave, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, athlete.getLogin());
             preparedStatement.setString(2, athlete.getPassword());
-            preparedStatement.setString(3, athlete.getRole().toString());
+            preparedStatement.setString(3, athlete.getRole().name());
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();

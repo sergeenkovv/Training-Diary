@@ -4,6 +4,7 @@ import com.ivan.dao.TrainingTypeDao;
 import com.ivan.model.TrainingType;
 import com.ivan.util.ConnectionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Repository
 @RequiredArgsConstructor
 public class TrainingTypeDaoImpl implements TrainingTypeDao {
 

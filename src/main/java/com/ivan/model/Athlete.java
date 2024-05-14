@@ -1,5 +1,7 @@
 package com.ivan.model;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +38,7 @@ public class Athlete {
     /**
      * The role of the athlete. Defaults to {@link Role#CLIENT}.
      */
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.CLIENT;
 }

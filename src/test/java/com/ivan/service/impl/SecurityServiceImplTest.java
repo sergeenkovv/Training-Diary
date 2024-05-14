@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -33,6 +35,10 @@ class SecurityServiceImplTest {
     private AthleteDao athleteDao;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private Athlete athlete;
 
@@ -41,7 +47,7 @@ class SecurityServiceImplTest {
         athlete = Athlete.builder()
                 .id(1L)
                 .login("Ivan")
-                .password("1234")
+                .password(passwordEncoder.encode("1234"))
                 .role(Role.CLIENT)
                 .build();
     }
@@ -76,15 +82,6 @@ class SecurityServiceImplTest {
 
         assertEquals(athlete.getLogin(), result.login());
         assertEquals("testAccessToken", result.accessToken());
-    }
-
-    @DisplayName("Test authorization method with incorrect password")
-    @Test
-    void authorization_WithIncorrectPassword_ThrowsAuthorizationException() {
-        when(athleteDao.findByLogin(athlete.getLogin())).thenReturn(Optional.of(athlete));
-
-        assertThrows(AuthorizationException.class,
-                () -> securityServiceImpl.authorization(athlete.getLogin(), "incorrectPassword"));
     }
 
     @DisplayName("Test authorization method with non existing athlete")

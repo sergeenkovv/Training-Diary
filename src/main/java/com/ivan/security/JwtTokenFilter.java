@@ -1,46 +1,62 @@
 package com.ivan.security;
 
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.annotation.WebInitParam;
+import com.ivan.service.impl.UserDetailsServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
-@WebFilter(urlPatterns = "/*", initParams = @WebInitParam(name = "order", value = "1"))
-public class JwtTokenFilter implements Filter {
+@Component
+@RequiredArgsConstructor
+public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private JwtTokenProvider jwtTokenProvider;
-
-    private ServletContext servletContext;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Override
-    public void init(FilterConfig filterConfig) {
-        this.servletContext = filterConfig.getServletContext();
-        jwtTokenProvider = (JwtTokenProvider) servletContext.getAttribute("jwtTokenProvider");
-    }
-
-    // TODO: 29.04.2024 проблема. я могу войти под старыми токеном
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = getJWTFromRequest((HttpServletRequest) servletRequest);
+            String token = getJWTFromRequest(request);
             if (token != null && jwtTokenProvider.validateToken(token)) {
-                Authentication authentication = jwtTokenProvider.authentication(token);
-                servletContext.setAttribute("authentication", authentication);
-            } else {
-                servletContext.setAttribute("authentication", new Authentication(null, null, false, "Bearer token is null or invalid!"));
+                String username = jwtTokenProvider.getLoginFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+                        userDetails.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-        } catch (RuntimeException e) {
-            servletContext.setAttribute("authentication", new Authentication(null, null, false, e.getMessage()));
+            filterChain.doFilter(request, response);
+        } catch (SignatureException | ExpiredJwtException e) {
+            handlerExceptionResolver.resolveException(request, response, null, e);
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 
+    /**
+     * Extracts JWT token from the Authorization header in the request.
+     *
+     * @param request HTTP servlet request.
+     * @return Extracted JWT token or null if not present.
+     */
     private String getJWTFromRequest(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && !header.isBlank() && header.startsWith("Bearer ")) {
-            return header.substring(7);
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
         return null;
     }

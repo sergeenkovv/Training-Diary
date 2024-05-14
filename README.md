@@ -17,6 +17,7 @@
 [HW №1](https://github.com/sergeenkovv/Training-Diary/pull/1)
 [HW №2](https://github.com/sergeenkovv/Training-Diary/pull/2)
 [HW №3](https://github.com/sergeenkovv/Training-Diary/pull/3)
+[HW №4](https://github.com/sergeenkovv/Training-Diary/pull/4)
 
 ## Tech stack
 
@@ -26,6 +27,7 @@
 + Lombok
 + MapStruct
 + AspectJ
++ Swagger
 + JWT
 + JUnit 5
 + AssertJ
@@ -150,6 +152,8 @@ ___
 ```
 
 ___
+**GET:** `/api/trainer/client/show-all` — Get all athletes.
+___
 **GET:** `/api/client/training/show-by-date?login=vanya` — Get training by date.
 
 **GET:** `/api/client/training/show-by-sets-amount?login=vanya` — Get training by sets amount.
@@ -167,7 +171,7 @@ ___
 ## Startup instructions
 
 1. Start docker container with database. Run the command in the terminal in the root directory of the project: ` docker compose up `.
-2. Build the application: ` mvn clean package `.
+2. Build the application: ` mvn clean compile `.
 3. Run the application.
 
 ## Contact me

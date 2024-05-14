@@ -1,32 +1,42 @@
 package com.ivan.security;
 
-import com.ivan.model.Athlete;
-import com.ivan.service.AthleteService;
+import com.ivan.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.nio.file.AccessDeniedException;
 import java.security.Key;
 import java.util.Date;
 
+@Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final Long access;
-    private final Key key;
-    private final AthleteService athleteService;
+    private final JwtProperties jwtProperties;
+    private Key key;
 
-    public JwtTokenProvider(String secret, Long access, AthleteService athleteService) {
-        this.access = access;
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.athleteService = athleteService;
+    /**
+     * Initializes the key for JWT token signing using the provided secret from JwtProperties.
+     */
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
+    /**
+     * Creates a new access token for the given login.
+     *
+     * @param login The user login for whom the token is created.
+     * @return The generated access token.
+     */
     public String createAccessToken(String login) {
         Claims claims = Jwts.claims().setSubject(login);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + access);
+        Date validity = new Date(now.getTime() + jwtProperties.getAccess());
 
         String accessToken = Jwts.builder()
                 .setClaims(claims)
@@ -38,17 +48,12 @@ public class JwtTokenProvider {
         return accessToken;
     }
 
-    public Authentication authentication(String token) throws AccessDeniedException {
-        if (!validateToken(token)) {
-            throw new AccessDeniedException("Access denied: Invalid token" + token);
-        }
-
-        String login = getLoginFromToken(token);
-        Athlete athlete = athleteService.getByLogin(login);
-
-        return new Authentication(login, athlete.getRole(), true, "Successful login");
-    }
-
+    /**
+     * Extracts the user login from the provided token.
+     *
+     * @param token The JWT token from which the login is to be extracted.
+     * @return The user login extracted from the token.
+     */
     public String getLoginFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -58,12 +63,17 @@ public class JwtTokenProvider {
                 .getSubject();
     }
 
-    public boolean validateToken(String token) throws RuntimeException {
+    /**
+     * Validates the provided token.
+     *
+     * @param token The JWT token to be validated.
+     * @return true if the token is valid, false otherwise.
+     */
+    public boolean validateToken(String token) {
         Jws<Claims> claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token);
-
         return !claims.getBody().getExpiration().before(new Date());
     }
 }

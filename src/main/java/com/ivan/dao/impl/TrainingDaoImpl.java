@@ -6,6 +6,7 @@ import com.ivan.dao.TrainingTypeDao;
 import com.ivan.model.Training;
 import com.ivan.util.ConnectionManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Repository
 @RequiredArgsConstructor
 public class TrainingDaoImpl implements TrainingDao {
 

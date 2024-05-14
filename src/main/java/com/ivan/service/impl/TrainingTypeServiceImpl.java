@@ -7,6 +7,8 @@ import com.ivan.exception.InvalidTrainingTypeException;
 import com.ivan.model.TrainingType;
 import com.ivan.service.TrainingTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,9 @@ import java.util.Optional;
  *
  * @author sergeenkovv
  */
+@Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     private final TrainingTypeDao trainingTypeDao;
@@ -41,6 +45,7 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
 
     @Override
     @Loggable
+    @Transactional
     public void addTrainingType(String typeName) {
         Optional<TrainingType> byTypeName = trainingTypeDao.findByTypeName(typeName);
 
@@ -62,6 +67,7 @@ public class TrainingTypeServiceImpl implements TrainingTypeService {
      */
     @Override
     @Loggable
+    @Transactional
     public void deleteTrainingType(String typeName) {
         trainingTypeDao.delete(getByTypeName(typeName).getId());
     }
