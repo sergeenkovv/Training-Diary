@@ -1,12 +1,28 @@
-datasource:
-  driver: org.postgresql.Driver
-  username: ivan
-  password: 123
-  url: jdbc:postgresql://localhost:5437/training_diary_db
-liquibase:
-  enabled: true
-  changeLogFile: db/changelog/changelog.xml
-  schemaName: migration
-jwt:
-  secret: cGFzc3dvcmRmb3JJdmFuZ2lnYWNoYWRvdmljaA==
-  access: 3600000
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Training-Diary
+
+  datasource:
+    url: jdbc:postgresql://localhost:5437/training_diary_db
+    username: ivan
+    password: 123
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
+    change-log: db/changelog/changelog.xml
+    default-schema: migration
+
+  security:
+    jwt:
+      secret: cGFzc3dvcmRmb3JJdmFuZ2lnYWNoYWRvdmljaA==
+      access: 3600000
+
+app:
+  common:
+    logging:
+      enabled: true
+      level: INFO

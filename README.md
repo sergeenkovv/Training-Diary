@@ -18,10 +18,12 @@
 [HW №2](https://github.com/sergeenkovv/Training-Diary/pull/2)
 [HW №3](https://github.com/sergeenkovv/Training-Diary/pull/3)
 [HW №4](https://github.com/sergeenkovv/Training-Diary/pull/4)
+[HW №5](https://github.com/sergeenkovv/Training-Diary/pull/5)
 
 ## Tech stack
 
 + Java 17
++ Spring Boot 3.2.0
 + PostgreSQL
 + Liquibase
 + Lombok
@@ -152,21 +154,21 @@ ___
 ```
 
 ___
-**GET:** `/api/trainer/client/show-all` — Get all athletes.
+**GET:** `/api/trainer/athlete/show-all?login=trainer` — Get all athletes.
 ___
 **GET:** `/api/client/training/show-by-date?login=vanya` — Get training by date.
 
 **GET:** `/api/client/training/show-by-sets-amount?login=vanya` — Get training by sets amount.
 
 ___
-**GET:** `/api/trainer/training/show-by-date?login=vanya` — Get training by date for any athlete.
+**GET:** `/api/trainer/training/show-by-date?login=trainer&loginClient=vanya` — Get training by date for any athlete.
 
-**GET:** `/api/trainer/training/show-by-sets-amount?login=vanya` — Get training by sets amount for any athlete.
+**GET:** `/api/trainer/training/show-by-sets-amount?login=trainer&loginClient=vanya` — Get training by sets amount for any athlete.
 
 ___
-**GET:** `/api/client/training-types/show-training-types`  — Get all training athletes.
+**GET:** `/api/client/training-types/show-training-types?login=vanya`  — Get all training athletes.
 
-**GET:** `/api/trainer/training-types/show-training-types`  — Get all training athletes.
+**GET:** `/api/trainer/training-types/show-training-types?login=trainer`  — Get all training athletes.
 
 ## Startup instructions
 
